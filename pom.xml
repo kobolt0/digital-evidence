@@ -66,10 +66,16 @@
       <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
 
-    <!--mariaDB jdbc-->
+    <!--mariaDB jdbc (테스트용) -->
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
+    </dependency>
+
+    <!--h2 jdbc (테스트용) -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
     </dependency>
 
     <!--oracle jdbc-->

@@ -3,6 +3,7 @@ package kr.go.spo.worker;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.camunda.bpm.engine.variable.VariableMap;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -13,8 +14,10 @@ public class TestWorker implements JavaDelegate {
 
 //		IntegerValue val1 = execution.getVariableTyped("val1");
 
-    execution.setVariable("approved", true);
 
+    VariableMap asdf = execution.getVariablesLocalTyped();
+
+    execution.setVariable("approved", true);
 
     log.info("\n\n##  #################################");
     log.info("##  execution.getBpmnModelElementInstance().getName(): " + execution.getBpmnModelElementInstance().getName());

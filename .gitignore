@@ -1,0 +1,7 @@
+*.class
+/target/
+**/target
+*.db
+# IntelliJ project files
+.idea
+.idea/*.xml

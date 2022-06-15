@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="preProc">
+
+    <insert id="insertTbTaskRun" parameterMap="kr.go.spo.model.TbTaskRun">
+        INSERT INTO tb_task_run
+        (
+            task_instance_id
+        , case_id
+        , process_instance_id
+        , task_status
+        , task_start_time
+        , task_end_time
+        )
+        VALUES
+            (
+              #{taskInstanceId}
+            , #{caseId}
+            , #{processInstanceId}
+            , #{taskStatus}
+            , #{taskStartTime}
+            , #{taskEndTime}
+            )
+    </insert>
+    <update id="updateTbTaskRun" parameterMap="kr.go.spo.model.TbTaskRun">
+        UPDATE tb_task_run
+        SET
+            task_instance_id    = #{taskInstanceId}
+          , case_id             = #{caseId}
+          , process_instance_id = #{processInstanceId}
+          , task_status         = #{taskStatus}
+          , task_start_time     = #{taskStartTime}
+          , task_end_time       = #{taskEndTime}
+        WHERE 1=1
+          AND task_instance_id = #{taskInstanceId}
+    </update>
+    <insert id="insertTbFile" parameterMap="kr.go.spo.model.TbTaskRun">
+        INSERT INTO tb_file
+        (
+            case_id
+        , file_id
+        , file_path
+        , file_size
+        , create_time
+        , first_cate
+        , signature_cate
+        )
+        VALUES
+            (
+              #{caseId}
+            , #{fileId}
+            , #{filePath}
+            , #{fileSize}
+            , #{createTime}
+            , #{firstCate}
+            , #{signatureCate}
+            )
+    </insert>
+    <update id="updateTbFile" parameterMap="kr.go.spo.model.TbTaskRun">
+        UPDATE tb_file
+        SET
+            file_path      = #{filePath}
+          , file_size      = #{fileSize}
+          , create_time    = #{createTime}
+          , first_cate     = #{firstCate}
+          , signature_cate = #{signatureCate}
+        WHERE 1=1
+          AND case_id = #{caseId}
+          AND file_id = #{fileId}
+    </update>
+</mapper>
