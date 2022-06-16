@@ -15,4 +15,12 @@
         WHERE 1=1
     </select>
 
+    <select id="dummy" resultType="java.util.Map">
+        SELECT
+            col1
+             , col2
+        FROM dummy A
+        WHERE 1=1
+    </select>
+
 </mapper>

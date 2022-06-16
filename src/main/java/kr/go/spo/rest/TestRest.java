@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +22,19 @@ import java.util.Map;
 public class TestRest {
   private SqlSessionTemplate sqlSessionTemplate;
 
-  @GetMapping("/testGo")
-  public String testGo() {
+  @GetMapping("/testJson")
+  public String testJsonObj() {
+    Map map = sqlSessionTemplate.selectOne("test.selectTest");
+    log.debug("sql resutl:{}" , map);
+
+    List list = sqlSessionTemplate.selectList("test.selectTest");
+    log.debug("sql list resutl:{}" , list);
+
+    return map.toString();
+  }
+
+  @GetMapping("/testList")
+  public String testJsonList() {
     Map map = sqlSessionTemplate.selectOne("test.selectTest");
     log.debug("sql resutl:{}" , map);
 
@@ -30,6 +42,11 @@ public class TestRest {
     log.debug("sql list resutl:{}" , list);
 
     return list.toString();
+  }
+  @GetMapping("/dummy")
+  public Map<String, String> testDummy() {
+    Map map = sqlSessionTemplate.selectOne("test.dummy");
+    return map;
   }
 
 

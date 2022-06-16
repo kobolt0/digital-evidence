@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TbTaskRun {
   public String taskInstanceId;
-  public String caseId;
   public String processInstanceId;
+  public String caseId;
   public String taskStatus;
   public String taskStartTime;
   public String taskEndTime;

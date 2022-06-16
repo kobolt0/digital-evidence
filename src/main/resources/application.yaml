@@ -1,9 +1,13 @@
 spring:
   profiles:
-#    active: dev
-    active: local
+    active: dev
+#    active: local
 #    active: h2
 
-# 압축해제 최대 횟수
 
-# 전처리 rest api 서버 URL
+
+workflow:
+  preprocess:
+    # 압축해제 최대 횟수
+    # 전처리 rest api 서버 URL
+    serverIp: http://localhost:8070
