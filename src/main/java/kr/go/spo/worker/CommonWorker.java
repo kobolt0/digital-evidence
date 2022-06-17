@@ -48,27 +48,29 @@ public abstract class CommonWorker implements JavaDelegate {
 
   @Override
   public void execute(DelegateExecution execution) {
-    log.info("\n");
-    log.info("\n");
-    log.info("# ## START CommonWorker ############################################");
-    log.info("##  #################################");
-    log.info("##  execution.getBpmnModelElementInstance().getName(): " + execution.getBpmnModelElementInstance().getName());
-    log.info("##  vals " + execution.getVariables().toString());
-    log.info("##  getActivityInstanceId: " + execution.getActivityInstanceId());
-    log.info("##  getCurrentActivityId: " + execution.getCurrentActivityId());
-    log.info("##  getId: " + execution.getId());
-    log.info("##  #################################" + this.getClass().getName());
-    log.info("##  #################################");
-    log.info("\n");
-    log.info("\n");
+
+    log.debug("\n");
+    log.debug("#@## START CommonWorker ############################################");
+    log.debug("##@#  taskName: " + execution.getBpmnModelElementInstance().getName());
+    log.debug("##@#  vals " + execution.getVariables().toString());
+    log.debug("##@#  getActivityInstanceId: " + execution.getActivityInstanceId());
+    log.debug("##@#  getCurrentActivityId: " + execution.getCurrentActivityId());
+    log.debug("##@#  getId: " + execution.getId());
+    log.debug("#@##################################");
+    log.debug("\n");
 
     // 1. 초기화
     // 입력파라메터 Map 설정
     inParamMap = new HashMap<>();
     Set <String> paramNames = execution.getVariableNames();
     for (String name : paramNames) {
-      TypedValue tval = execution.getVariableTyped(name);
-      inParamMap.put(name, tval.getValue().toString());
+      if(execution.getVariable(name) == null){
+        inParamMap.put(name, null);
+      }
+      else{
+        TypedValue tval = execution.getVariableTyped(name);
+        inParamMap.put(name, tval.getValue().toString());
+      }
     }
 
     // 인스턴스id 설정
@@ -81,9 +83,9 @@ public abstract class CommonWorker implements JavaDelegate {
       setExtractCnt(ivExCnt.getValue());
     }
 
-    log.info("\n");
-    log.info("\n");
-    log.info("##  inParamMap.toString(): " + inParamMap.toString());
+    log.debug("\n");
+    log.debug("\n");
+    log.debug("##@#  inParamMap.toString(): " + inParamMap.toString());
 
     // 2. 타스크 시작 상태 db Insert
     TbTaskRun taskRunVO = null;
@@ -97,7 +99,7 @@ public abstract class CommonWorker implements JavaDelegate {
     );
 
 
-    log.info("# ## insertTbTaskRun[{}]" +  taskRunVO);
+    log.debug("#@## insertTbTaskRun[{}]" +  taskRunVO);
     int insRslt = sqlSessionTemplate.insert("preProc.insertTbTaskRun", taskRunVO);
     log.debug("##@# insRslt[{}]", insRslt);
 
@@ -119,10 +121,10 @@ public abstract class CommonWorker implements JavaDelegate {
             , "" + new SimpleDateFormat("yyyyMMddHHmmssSS").format(new Date())
     );
 
-    log.info("# ## this.taskInstanceId[{}]" +  this.taskInstanceId);
+    log.debug("#@## this.taskInstanceId[{}]" +  this.taskInstanceId);
 
 
-    log.info("# ## updateTbTaskRun[{}]" +  taskRunVO);
+    log.debug("#@## updateTbTaskRun[{}]" +  taskRunVO);
     int updRslt = sqlSessionTemplate.update("preProc.updateTbTaskRun", taskRunVO);
     log.debug("##@# updRslt[{}]", updRslt);
 
@@ -130,6 +132,12 @@ public abstract class CommonWorker implements JavaDelegate {
     execution.setVariable("extractCnt", this.extractCnt);
     execution.setVariable("extractEndYn", this.extractEndYn);
 
+    log.debug("\n");
+    log.debug("#@## END CommonWorker ############################################");
+    log.debug("##@#  taskName: " + execution.getBpmnModelElementInstance().getName());
+    log.debug("##@#  vals " + execution.getVariables().toString());
+    log.debug("#@##################################");
+    log.debug("\n");
 
   }
 

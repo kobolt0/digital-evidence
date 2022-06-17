@@ -78,7 +78,8 @@
       <artifactId>h2</artifactId>
     </dependency>
 
-    <!--oracle jdbc-->
+    <!--oracle jdbc
+    -->
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>

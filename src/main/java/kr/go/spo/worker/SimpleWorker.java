@@ -22,22 +22,32 @@ public class SimpleWorker extends CommonWorker {
     }
 
 
+    //모델러에 정의된 rest api URI 변수명
     final String keyApiUri = "processApiUri";
 
     @Value("${workflow.preprocess.serverIp}")
     String apiServerIp;
 
+    // 개별로직 구현
     @Override
     public String excuteMain(DelegateExecution execution) {
 
+        log.debug("#@## END excuteMain ################################");
+        log.debug("#@## taskNm: " + execution.getBpmnModelElementInstance().getName());
+        log.debug("#@## inParamMap " + inParamMap);
+        log.debug("#@## getActivityInstanceId: " + execution.getActivityInstanceId());
+        log.debug("#@## ### ########## ################################");
+
         // rest api 호출
-        log.info("# ## HttpUtils.callHttpGet[{}]", apiServerIp + inParamMap.get(this.keyApiUri));
-        HttpResVo resVO = HttpUtils.callHttpGet(apiServerIp + inParamMap.get(this.keyApiUri));
+        log.debug("#@## HttpUtils.callHttpGet[{}]", apiServerIp + inParamMap.get(this.keyApiUri));
+        HttpResVo resVO = HttpUtils.callHttpGet(apiServerIp + inParamMap.get(this.keyApiUri));  //호출
+        log.debug("#@## HttpUtils.callHttpGet END getResponsCode:[{}]  getResponsCode[{}]  getContent[{}]", resVO.getResponsCode(), resVO.getResponsCode(), resVO.getContent());
         String resultStr = resVO.getResponsCode() == 200 ? "정상종료" : "오류";
 
         // Gson 객체 생성
         Gson gson = new Gson();
 
+        // rest api 에서 받은 값를 그대로 워크플로 파라메터에 설정
         // Json 문자열 -> Map
         String strContent = resVO.getContent();
         if (StringUtils.isNotEmpty(strContent)){
@@ -47,19 +57,11 @@ public class SimpleWorker extends CommonWorker {
             }
         }
 
-        log.info("# ## excuteMain ################################");
-
-        //log.info("# ## jsonMap[{}]", jsonMap);
-        log.info("# ## this.taskInstanceId[{}]", this.taskInstanceId);
-        log.info("# ## this.sqlSessionTemplate[{}]", this.sqlSessionTemplate);
-        log.info("# ## this.inParamMap[{}]", this.inParamMap);
-
-        log.info("# ## execution.getBpmnModelElementInstance().getName(): " + execution.getBpmnModelElementInstance().getName());
-        log.info("# ## vals " + execution.getVariables().toString());
-        log.info("# ## getProcessInstanceId: " + execution.getProcessInstanceId());
-        log.info("# ## getActivityInstanceId: " + execution.getActivityInstanceId());
-        log.info("# ## getCurrentActivityId: " + execution.getCurrentActivityId());
-        log.info("# ## getId: " + execution.getId());
+        log.debug("#@## END excuteMain ################################");
+        log.debug("#@## taskNm: " + execution.getBpmnModelElementInstance().getName());
+        log.debug("#@## vals " + execution.getVariables().toString());
+        log.debug("#@## getActivityInstanceId: " + execution.getActivityInstanceId());
+        log.debug("#@## ### ########## ################################");
 
         return resultStr;
     }

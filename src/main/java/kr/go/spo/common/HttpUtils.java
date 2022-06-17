@@ -15,7 +15,6 @@ public class HttpUtils {
         String apiUrl = "http://localhost:8070/engine-rest/task";	// 각자 상황에 맞는 IP & url 사용
 		apiUrl = "http://localhost:8070/engine-rest/process-definition/key/test/start";
 
-
         HttpResVo result = callHttpGet(apiUrl + map2GetParam(null));
         System.out.println(result);
     }

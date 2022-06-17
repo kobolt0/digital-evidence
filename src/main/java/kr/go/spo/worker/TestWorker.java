@@ -19,15 +19,15 @@ public class TestWorker implements JavaDelegate {
 
     execution.setVariable("approved", true);
 
-    log.info("\n\n##  #################################");
-    log.info("##  execution.getBpmnModelElementInstance().getName(): " + execution.getBpmnModelElementInstance().getName());
-    log.info("##  vals " + execution.getVariables().toString());
-    log.info("##  getActivityInstanceId: " + execution.getActivityInstanceId());
-    log.info("##  getCurrentActivityId: " + execution.getCurrentActivityId());
-    log.info("##  getId: " + execution.getId());
+    log.debug("\n\n#@##################################");
+    log.debug("##@# execution.getBpmnModelElementInstance().getName(): " + execution.getBpmnModelElementInstance().getName());
+    log.debug("##@# vals " + execution.getVariables().toString());
+    log.debug("##@# getActivityInstanceId: " + execution.getActivityInstanceId());
+    log.debug("##@# getCurrentActivityId: " + execution.getCurrentActivityId());
+    log.debug("##@# getId: " + execution.getId());
 
-    log.info("\n\n##  #################################" + this.getClass().getName());
-    log.info("\n\n##  #################################");
+    log.debug("\n\n#@##################################" + this.getClass().getName());
+    log.debug("\n\n#@##################################");
 
 
   }

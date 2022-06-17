@@ -12,6 +12,6 @@ public class DefaultWorker  {
 
 
     protected void excuteService() {
-        log.info("");
+        log.debug("");
     }
 }

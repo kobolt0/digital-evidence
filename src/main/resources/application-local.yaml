@@ -1,12 +1,19 @@
 spring:
   datasource:
-    url: jdbc:oracle:thin:@127.0.0.1:1521:XE
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    url: jdbc:oracle:thin:@124.56.172.37:51521:XE
+    url: jdbc:oracle:thin:@localhost:1521:XE
     username: SCOTT
     password: TIGER
-    driver-class-name: oracle.jdbc.driver.OracleDriver
+
 
 camunda.bpm.admin-user:
   id: demo
   password: demo
 
 server.port: 8070
+
+camunda:
+  bpm:
+    database:
+      jdbc-batch-processing: false
