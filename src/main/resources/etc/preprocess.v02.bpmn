@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0xbt7wk" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="preprocess" name="전처리" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="시작">
+      <bpmn:outgoing>Flow_1x2ed7c</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_damage" name="손상검사" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1x2ed7c</bpmn:incoming>
+      <bpmn:incoming>Flow_0wodwll</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jbio25</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_1uicdvx" name="종료">
+      <bpmn:incoming>Flow_1d15ll3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1x2ed7c" sourceRef="StartEvent_1" targetRef="Activity_damage" />
+    <bpmn:serviceTask id="Activity_password" name="암호탐지" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_08isxkp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cnwiby</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_signature" name="2차분류(시그니처 분석)" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0cnwiby</bpmn:incoming>
+      <bpmn:outgoing>Flow_097xy0x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_file_meta" name="정상파일 메타정보 저장" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+          <camunda:inputParameter name="criterion">isProcessEnd=Y</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_097xy0x</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kq38jx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_archive" name="압축파일 해제" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+          <camunda:outputParameter name="criterion" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0y6k3mc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1l4q83x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_mail" name="메일첨부 해제" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+          <camunda:outputParameter name="criterion" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1l4q83x</bpmn:incoming>
+      <bpmn:outgoing>Flow_0k793jw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_mailbox" name="메일박스 해제" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="/dummy">processApiUri</camunda:inputParameter>
+          <camunda:outputParameter name="criterion" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0k793jw</bpmn:incoming>
+      <bpmn:outgoing>Flow_059h208</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_get_uuid" name="UUID 생성" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_059h208</bpmn:incoming>
+      <bpmn:outgoing>Flow_0wodwll</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_0z7apep" name="해제최대횟수도달 or 해재대상파일없음?">
+      <bpmn:incoming>Flow_0kq38jx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0y6k3mc</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1d15ll3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0jbio25" sourceRef="Activity_damage" targetRef="Activity_virus" />
+    <bpmn:sequenceFlow id="Flow_0cnwiby" sourceRef="Activity_password" targetRef="Activity_signature" />
+    <bpmn:sequenceFlow id="Flow_097xy0x" sourceRef="Activity_signature" targetRef="Activity_file_meta" />
+    <bpmn:sequenceFlow id="Flow_0kq38jx" sourceRef="Activity_file_meta" targetRef="Gateway_0z7apep" />
+    <bpmn:sequenceFlow id="Flow_0y6k3mc" name="N" sourceRef="Gateway_0z7apep" targetRef="Activity_archive">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isProcessEnd!='Y'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1l4q83x" sourceRef="Activity_archive" targetRef="Activity_mail" />
+    <bpmn:sequenceFlow id="Flow_0k793jw" sourceRef="Activity_mail" targetRef="Activity_mailbox" />
+    <bpmn:sequenceFlow id="Flow_059h208" sourceRef="Activity_mailbox" targetRef="Activity_get_uuid" />
+    <bpmn:sequenceFlow id="Flow_1d15ll3" name="Y" sourceRef="Gateway_0z7apep" targetRef="Event_1uicdvx">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isProcessEnd=='Y'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0wodwll" sourceRef="Activity_get_uuid" targetRef="Activity_damage" />
+    <bpmn:serviceTask id="Activity_virus" name="바이러스검사" camunda:asyncBefore="true" camunda:class="kr.go.spo.worker.SimpleWorker">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="processApiUri">/dummy</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0jbio25</bpmn:incoming>
+      <bpmn:outgoing>Flow_08isxkp</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_08isxkp" sourceRef="Activity_virus" targetRef="Activity_password" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="preprocess">
+      <bpmndi:BPMNEdge id="Flow_0wodwll_di" bpmnElement="Flow_0wodwll">
+        <di:waypoint x="1300" y="390" />
+        <di:waypoint x="320" y="390" />
+        <di:waypoint x="320" y="267" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d15ll3_di" bpmnElement="Flow_1d15ll3">
+        <di:waypoint x="950" y="202" />
+        <di:waypoint x="950" y="138" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="962" y="167" width="7" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_059h208_di" bpmnElement="Flow_059h208">
+        <di:waypoint x="1350" y="267" />
+        <di:waypoint x="1350" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k793jw_di" bpmnElement="Flow_0k793jw">
+        <di:waypoint x="1270" y="227" />
+        <di:waypoint x="1300" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l4q83x_di" bpmnElement="Flow_1l4q83x">
+        <di:waypoint x="1130" y="227" />
+        <di:waypoint x="1170" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y6k3mc_di" bpmnElement="Flow_0y6k3mc">
+        <di:waypoint x="975" y="227" />
+        <di:waypoint x="1030" y="227" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1000" y="209" width="8" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kq38jx_di" bpmnElement="Flow_0kq38jx">
+        <di:waypoint x="890" y="227" />
+        <di:waypoint x="925" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_097xy0x_di" bpmnElement="Flow_097xy0x">
+        <di:waypoint x="760" y="227" />
+        <di:waypoint x="790" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cnwiby_di" bpmnElement="Flow_0cnwiby">
+        <di:waypoint x="630" y="227" />
+        <di:waypoint x="660" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08isxkp_di" bpmnElement="Flow_08isxkp">
+        <di:waypoint x="500" y="227" />
+        <di:waypoint x="530" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jbio25_di" bpmnElement="Flow_0jbio25">
+        <di:waypoint x="370" y="227" />
+        <di:waypoint x="400" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x2ed7c_di" bpmnElement="Flow_1x2ed7c">
+        <di:waypoint x="215" y="227" />
+        <di:waypoint x="270" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="209" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="187" y="252" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1u05p58_di" bpmnElement="Activity_damage">
+        <dc:Bounds x="270" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0k5ygop" bpmnElement="Activity_virus">
+        <dc:Bounds x="400" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0yujixs" bpmnElement="Activity_password">
+        <dc:Bounds x="530" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_08yhnno" bpmnElement="Activity_signature">
+        <dc:Bounds x="660" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_11fvle4" bpmnElement="Activity_file_meta">
+        <dc:Bounds x="790" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_17rsyu5" bpmnElement="Activity_mail">
+        <dc:Bounds x="1170" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0qhfzwk" bpmnElement="Activity_mailbox">
+        <dc:Bounds x="1300" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0hdd7wi" bpmnElement="Activity_get_uuid">
+        <dc:Bounds x="1300" y="350" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_12u3xp9" bpmnElement="Activity_archive">
+        <dc:Bounds x="1030" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1uicdvx_di" bpmnElement="Event_1uicdvx">
+        <dc:Bounds x="932" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="939" y="78" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0z7apep_di" bpmnElement="Gateway_0z7apep" isMarkerVisible="true">
+        <dc:Bounds x="925" y="202" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908" y="259" width="88" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
