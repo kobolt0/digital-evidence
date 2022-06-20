@@ -6,13 +6,16 @@ import kr.go.spo.common.HttpResVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.commons.utils.StringUtil;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * BPNM에 정의된 API URL을 호출하는 worker.
+ * @see kr.go.spo.worker.CommonWorker
+ * */
 @Slf4j
 @Service
 public class SimpleWorker extends CommonWorker {
@@ -21,14 +24,13 @@ public class SimpleWorker extends CommonWorker {
         super(sqlSessionTemplate);
     }
 
-
-    //모델러에 정의된 rest api URI 변수명
+    /** 모델러에 정의된 호출할 rest api URI 변수명 */
     final String keyApiUri = "processApiUri";
 
     @Value("${workflow.preprocess.serverIp}")
     String apiServerIp;
 
-    // 개별로직 구현
+    /** 개별로직 구현 */
     @Override
     public String excuteMain(DelegateExecution execution) {
 
@@ -39,6 +41,7 @@ public class SimpleWorker extends CommonWorker {
         log.debug("#@## ### ########## ################################");
 
         // rest api 호출
+        String callUrl = apiServerIp + inParamMap.get(this.keyApiUri) + HttpUtils.map2GetParam(inParamMap);
         log.debug("#@## HttpUtils.callHttpGet[{}]", apiServerIp + inParamMap.get(this.keyApiUri));
         HttpResVo resVO = HttpUtils.callHttpGet(apiServerIp + inParamMap.get(this.keyApiUri));  //호출
         log.debug("#@## HttpUtils.callHttpGet END getResponsCode:[{}]  getResponsCode[{}]  getContent[{}]", resVO.getResponsCode(), resVO.getResponsCode(), resVO.getContent());
@@ -47,7 +50,7 @@ public class SimpleWorker extends CommonWorker {
         // Gson 객체 생성
         Gson gson = new Gson();
 
-        // rest api 에서 받은 값를 그대로 워크플로 파라메터에 설정
+        // rest api 에서 받은 값를 그대로 워크플로에 전달할 파라메터에 설정
         // Json 문자열 -> Map
         String strContent = resVO.getContent();
         if (StringUtils.isNotEmpty(strContent)){

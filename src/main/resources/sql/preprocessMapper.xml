@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="preProc">
+<mapper namespace="preprocess">
 
     <insert id="insertTbTaskRun" parameterType="kr.go.spo.model.TbTaskRun">
         INSERT INTO tb_task_run
@@ -33,7 +33,7 @@
         WHERE 1=1
           AND task_instance_id = #{taskInstanceId}
     </update>
-    <insert id="insertTbFile" parameterType="kr.go.spo.model.TbTaskRun">
+    <insert id="insertTbFile" parameterType="kr.go.spo.model.TbFile">
         INSERT INTO tb_file
         (
             case_id

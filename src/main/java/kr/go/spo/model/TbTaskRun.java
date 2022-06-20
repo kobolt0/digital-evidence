@@ -2,8 +2,10 @@ package kr.go.spo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+/**
+ * 테이블 Tb_TASK_RUN VO
+ */
 @Data
 @AllArgsConstructor
 public class TbTaskRun {

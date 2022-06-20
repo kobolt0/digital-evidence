@@ -1,13 +1,21 @@
 spring:
   profiles:
-#    active: dev #mariaDB
     active: local #oracle
-#    active: h2
 
+camunda.bpm.admin-user:
+  id: demo
+  password: demo
 
+server.port: 8070
+
+camunda:
+  bpm:
+    database:
+      jdbc-batch-processing: false
 
 workflow:
   preprocess:
     # 압축해제 최대 횟수
+    extractMaxCnt: 4
     # 전처리 rest api 서버 URL
     serverIp: http://localhost:8070

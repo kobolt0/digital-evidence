@@ -1,24 +1,17 @@
 package kr.go.spo.common;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * HTTP 관련 유틸리티 공통 메소드
+ */
 public class HttpUtils {
-    public static void main(String[] args) throws Exception {
-
-//		apiTestGet();
-        String apiUrl = "http://localhost:8070/engine-rest/task";	// 각자 상황에 맞는 IP & url 사용
-		apiUrl = "http://localhost:8070/engine-rest/process-definition/key/test/start";
-
-        HttpResVo result = callHttpGet(apiUrl + map2GetParam(null));
-        System.out.println(result);
-    }
-
 
     static final int connTimeout = 5000;
     static final int readTimeout = 3000;
@@ -27,15 +20,13 @@ public class HttpUtils {
 
     public static HttpResVo callHttpGet(String strUrl)
     {
-        URL url = null;
-        String readLine = null;
-        StringBuilder buffer = null;
+        URL url;
+        String readLine;
+        StringBuilder buffer;
         BufferedReader bufferedReader = null;
-        BufferedWriter bufferedWriter = null;
-        HttpURLConnection urlConnection = null;
+        HttpURLConnection urlConnection;
 
         HttpResVo result = new HttpResVo();
-
 
         try
         {
@@ -49,7 +40,7 @@ public class HttpUtils {
             buffer = new StringBuilder();
             if(urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
             {
-                bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"UTF-8"));
+                bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
                 while((readLine = bufferedReader.readLine()) != null)
                 {
                     if (buffer.length() > 0){
@@ -76,7 +67,6 @@ public class HttpUtils {
         {
             try
             {
-                if (bufferedWriter != null) { bufferedWriter.close(); }
                 if (bufferedReader != null) { bufferedReader.close(); }
             }
             catch(Exception ex)
@@ -87,17 +77,17 @@ public class HttpUtils {
         return result;
     }
 
-    public static String map2GetParam(Map<String, String> inMap) throws Exception
+    public static String map2GetParam(Map<String, String> inMap)
     {
         if (inMap == null) return "";
 
-        StringBuffer bf = new StringBuffer();
-        Set<String> keyset = inMap.keySet();
-        for (String key :keyset) {
-            bf.append(bf.length() > 0 ? "&" : "?");
-            bf.append(key).append("=").append(inMap.get(key));
+        StringBuffer sb = new StringBuffer();
+        Set<String> set = inMap.keySet();
+        for (String key :set) {
+            sb.append(sb.length() > 0 ? "&" : "?");
+            sb.append(key).append("=").append(inMap.get(key));
         }
 
-        return bf.toString();
+        return sb.toString();
     }
 }

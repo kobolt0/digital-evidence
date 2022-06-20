@@ -7,18 +7,34 @@
 
     <select id="selectTest" resultType="java.util.Map">
         SELECT
-            A.id_
-             , A.rev_
-             , A.name_
-             , A.type_
-        FROM ACT_ID_GROUP A
-        WHERE 1=1
+        TASK_INSTANCE_ID
+        , PROCESS_INSTANCE_ID
+        , CASE_ID
+        , TASK_STATUS
+        , TASK_START_TIME
+        , TASK_END_TIME
+        FROM   TB_TASK_RUN
+        WHERE  ROWNUM &lt; 2
+
+    </select>
+
+    <select id="selectTest2" resultType="kr.go.spo.model.TbTaskRun">
+        SELECT
+        TASK_INSTANCE_ID
+        , PROCESS_INSTANCE_ID
+        , CASE_ID
+        , TASK_STATUS
+        , TASK_START_TIME
+        , TASK_END_TIME
+        FROM   TB_TASK_RUN
+        WHERE  ROWNUM &lt; 2
+
     </select>
 
     <select id="dummy" resultType="java.util.Map">
         SELECT
-            col1
-             , col2
+            name
+             , val
         FROM tb_dummy A
         WHERE 1=1
     </select>

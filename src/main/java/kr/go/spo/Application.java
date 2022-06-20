@@ -28,7 +28,7 @@ public class Application {
     Resource[] res = new PathMatchingResourcePatternResolver().getResources("sql/*Mapper.xml");
 
     sessionFactory.setMapperLocations(res);
-
+    sessionFactory.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml"));
     return sessionFactory.getObject();
   }
 
