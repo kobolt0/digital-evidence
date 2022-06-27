@@ -1,5 +1,7 @@
 package kr.go.spo.common;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -11,6 +13,7 @@ import java.util.Set;
 /**
  * HTTP 관련 유틸리티 공통 메소드
  */
+@Slf4j
 public class HttpUtils {
 
     static final int connTimeout = 5000;
@@ -20,6 +23,7 @@ public class HttpUtils {
 
     public static HttpResVo callHttpGet(String strUrl)
     {
+        log.debug("##@# 한글 callHttpGet[{}]", strUrl);
         URL url;
         String readLine;
         StringBuilder buffer;
