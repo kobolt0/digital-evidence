@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: local #oracle
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 camunda.bpm.admin-user:
   id: demo
@@ -19,3 +22,4 @@ workflow:
     extractMaxCnt: 4
     # 전처리 rest api 서버 URL
     serverIp: http://localhost:8070
+
