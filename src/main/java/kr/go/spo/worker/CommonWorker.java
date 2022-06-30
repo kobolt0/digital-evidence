@@ -75,9 +75,14 @@ public abstract class CommonWorker implements JavaDelegate {
     log.debug("##@#  vals " + execution.getVariables().toString());
     log.debug("##@#  getActivityInstanceId: " + execution.getActivityInstanceId());
     log.debug("##@#  getCurrentActivityId: " + execution.getCurrentActivityId());
+    log.debug("##@#  getCurrentActivityName: " + execution.getCurrentActivityName());
     log.debug("##@#  getId: " + execution.getId());
+    log.debug("##@#  getProcessInstanceId: " + execution.getProcessInstanceId());
+    log.debug("##@#  getProcessDefinitionId: " + execution.getProcessInstance().getProcessDefinitionId());
     log.debug("#@##################################");
     log.debug("\n");
+
+
 
     // 1. 초기화
     // 입력파라메터 Map 설정
@@ -92,6 +97,7 @@ public abstract class CommonWorker implements JavaDelegate {
         inParamMap.put(name, tval.getValue().toString());
       }
     }
+
 
     // 인스턴스id 설정
     this.processInstanceId = execution.getProcessInstanceId();

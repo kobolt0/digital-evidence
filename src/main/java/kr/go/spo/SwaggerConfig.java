@@ -21,7 +21,8 @@ public class SwaggerConfig  {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("kr.go.spo"))
+//                .apis(RequestHandlerSelectors.basePackage("kr.go.spo"))
+                .apis(RequestHandlerSelectors.any()) // 현재 RequestMapping으로 할당된 모든 URL 리스트를 추출
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());

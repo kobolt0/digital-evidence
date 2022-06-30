@@ -3,9 +3,12 @@ package kr.go.spo.rest;
 import kr.go.spo.model.TbTaskRun;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.rest.sub.runtime.ProcessInstanceResource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
+import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.http.HttpRequest;
@@ -21,11 +24,12 @@ import java.util.Map;
 @AllArgsConstructor
 public class TestRest {
   private SqlSessionTemplate sqlSessionTemplate;
-
   @GetMapping("/testJson")
   public String testJsonObj() {
     Map<String, String> map = sqlSessionTemplate.selectOne("test.selectTest");
     log.debug("##@# sql resutl:{}" , map);
+
+
     return map.toString();
   }
   @GetMapping("/test2")
