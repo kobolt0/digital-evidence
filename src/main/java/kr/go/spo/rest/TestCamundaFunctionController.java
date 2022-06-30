@@ -39,22 +39,9 @@ import java.util.Map;
 public class TestCamundaFunctionController {
   private SqlSessionTemplate sqlSessionTemplate;
 
-  // 프로세스 정지
-  @GetMapping("/killProcess")
-  public String killProcess(HttpServletRequest req, @RequestParam(value="val1", defaultValue="") String val1) {
-    ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-    RuntimeService runtimeService = processEngine.getRuntimeService();
+  // 프로세스 삭제
 
-    ProcessInstanceQuery qry = runtimeService.createProcessInstanceQuery();
-    List<ProcessInstance> list = qry.list();
-    qry.processInstanceId(val1).list();
-    for (ProcessInstance pi: list
-    ) {
-      runtimeService.suspendProcessInstanceById(pi.getId());
-    }
 
-    return null;
-  }
 
   // 프로세스 정지
   @GetMapping("/suspendProcess")
