@@ -1,17 +1,13 @@
-package kr.go.spo.rest;
+package kr.go.spo.controller;
 
-import kr.go.spo.model.TbTaskRun;
+import kr.go.spo.dto.TaskRunDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.engine.rest.sub.runtime.ProcessInstanceResource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
-import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +31,7 @@ public class TestRest {
   @GetMapping("/test2")
   public String testJsonObj2() {
 
-    TbTaskRun obj = sqlSessionTemplate.selectOne("test.selectTest2");
+    TaskRunDto obj = sqlSessionTemplate.selectOne("test.selectTest2");
     log.debug("##@# sql resutl:{}" , obj);
     return obj.toString();
   }

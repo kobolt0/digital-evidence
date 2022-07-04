@@ -1,6 +1,6 @@
 package kr.go.spo.worker;
 
-import kr.go.spo.model.TbTaskRun;
+import kr.go.spo.dto.TaskRunDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -114,8 +114,8 @@ public abstract class CommonWorker implements JavaDelegate {
     log.debug("##@#  inParamMap.toString(): " + inParamMap.toString());
 
     // 2. 타스크 시작 상태 db Insert
-    TbTaskRun taskRunVO;
-    taskRunVO = new TbTaskRun(
+    TaskRunDto taskRunVO;
+    taskRunVO = new TaskRunDto(
             "" + this.taskInstanceId
             , "" + inParamMap.get("caseId")
             , "" + this.processInstanceId
@@ -134,7 +134,7 @@ public abstract class CommonWorker implements JavaDelegate {
     log.debug("##@# excuteMain return[{}]", rslt);
 
     // 4. 타스크 종료 상태 db Update
-    taskRunVO = new TbTaskRun(
+    taskRunVO = new TaskRunDto(
             "" + this.taskInstanceId
             , "" + this.processInstanceId
             , "" + inParamMap.get("caseId")

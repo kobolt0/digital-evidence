@@ -1,4 +1,4 @@
-package kr.go.spo.rest;
+package kr.go.spo.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.BpmPlatform;
@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/test")
-public class TestCamundaFunctionController {
+public class HandleProcessController {
 
   private RuntimeService runtimeService;
 
@@ -160,5 +160,15 @@ public class TestCamundaFunctionController {
                     .list();
 
     return processInstances;
+  }
+
+
+  public String produceMsg(HttpServletRequest req
+          , @RequestParam(value="caseId", defaultValue="") String caseId
+          , @RequestParam(value="priority", defaultValue="") String priority
+
+  ) {
+
+      return null;
   }
 }

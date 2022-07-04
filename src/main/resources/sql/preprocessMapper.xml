@@ -5,7 +5,7 @@
 
 <mapper namespace="preprocess">
 
-    <insert id="insertTbTaskRun" parameterType="kr.go.spo.model.TbTaskRun">
+    <insert id="insertTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
         INSERT INTO tb_task_run
         (
           task_instance_id
@@ -25,7 +25,7 @@
             , #{taskEndTime}
             )
     </insert>
-    <update id="updateTbTaskRun" parameterType="kr.go.spo.model.TbTaskRun">
+    <update id="updateTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
         UPDATE tb_task_run
         SET
             task_status         = #{taskStatus}
@@ -33,7 +33,7 @@
         WHERE 1=1
           AND task_instance_id = #{taskInstanceId}
     </update>
-    <insert id="insertTbFile" parameterType="kr.go.spo.model.TbFile">
+    <insert id="insertTbFile" parameterType="kr.go.spo.dto.FileDto">
         INSERT INTO tb_file
         (
             case_id
@@ -55,7 +55,7 @@
             , #{signatureCate}
             )
     </insert>
-    <update id="updateTbFile" parameterType="kr.go.spo.model.TbTaskRun">
+    <update id="updateTbFile" parameterType="kr.go.spo.dto.TaskRunDto">
         UPDATE tb_file
         SET
             file_path      = #{filePath}

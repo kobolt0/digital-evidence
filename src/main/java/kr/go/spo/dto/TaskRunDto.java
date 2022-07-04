@@ -1,4 +1,4 @@
-package kr.go.spo.model;
+package kr.go.spo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class TbTaskRun {
+public class TaskRunDto {
   public String taskInstanceId;
   public String processInstanceId;
   public String caseId;

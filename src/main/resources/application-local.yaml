@@ -5,5 +5,9 @@ spring:
     username: camunda
     password: camunda
 
+  activemq:
+    user: admin
+    password: admin
+    broker-url: tcp://dongck.synology.me:61616
 
 

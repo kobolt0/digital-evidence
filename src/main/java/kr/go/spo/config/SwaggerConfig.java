@@ -1,4 +1,4 @@
-package kr.go.spo;
+package kr.go.spo.config;
 
 
 import org.springframework.context.annotation.Bean;
