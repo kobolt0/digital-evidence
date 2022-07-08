@@ -87,8 +87,22 @@ CREATE TABLE tb_task_run (
                              case_id varchar(20) DEFAULT NULL,
                              task_status varchar(20) DEFAULT NULL,
                              task_start_time varchar(20) DEFAULT NULL,
+                             task_suspend_time varchar(20) DEFAULT NULL,
                              task_end_time varchar(20) DEFAULT NULL,
-                             PRIMARY KEY (task_instance_id, process_instance_id)
+                             PRIMARY KEY (process_instance_id, task_instance_id)
+)
+;
+
+
+-- 프로세스인스턴스
+CREATE TABLE TB_PROCESS_INSTANCE (
+                                     PROCESS_INSTANCE_ID VARCHAR(80) DEFAULT NULL,
+                                     CASE_ID VARCHAR(20) DEFAULT NULL,
+                                     STATUS VARCHAR(20) DEFAULT NULL,
+                                     START_TIME VARCHAR(20) DEFAULT NULL,
+                                     SUSPEND_TIME VARCHAR(20) DEFAULT NULL,
+                                     END_TIME VARCHAR(20) DEFAULT NULL,
+                                     PRIMARY KEY (PROCESS_INSTANCE_ID)
 )
 ;
 
@@ -102,10 +116,13 @@ CREATE TABLE tb_dummy (
 ;
 
 -- 테스트용 테이블 인서트
-INSERT INTO tb_dummy (name,val) VALUES ('isProcessEnd', 'Y')
-;
+INSERT INTO tb_dummy (name,val) VALUES ('isProcessEnd', 'Y');
+INSERT INTO tb_dummy (name,val) VALUES ('sleepTime', '10');
 
 -- 더미테이블 값변경
---UPDATE tb_dummy SET val= 'Y' WHERE name = 'isProcessEnd';
---UPDATE tb_dummy SET val= 'N' WHERE name = 'isProcessEnd';
+UPDATE tb_dummy SET val= 'Y' WHERE name = 'isProcessEnd'; --종료
+UPDATE tb_dummy SET val= 'N' WHERE name = 'isProcessEnd'; --무한
 ;
+UPDATE tb_dummy SET val= '10' WHERE name = 'sleepTime';
+;
+
