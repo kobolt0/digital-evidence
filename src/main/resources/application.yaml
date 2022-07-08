@@ -1,13 +1,14 @@
 spring:
   profiles:
-    active: local #oracle
+    active: internet
+#    active: local
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
 camunda.bpm.admin-user:
-  id: demo
-  password: demo
+  id: vaiv
+  password: vaiv
 
 server.port: 8070
 

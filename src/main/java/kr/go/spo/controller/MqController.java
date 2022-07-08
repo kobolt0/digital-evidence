@@ -1,6 +1,6 @@
 package kr.go.spo.controller;
 
-import kr.go.spo.dto.TrgtCase;
+import kr.go.spo.dto.TrgtCaseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.core.JmsTemplate;
@@ -27,7 +27,7 @@ public class MqController {
   ) {
 
     jmsTemplate.setPubSubDomain(false);
-    jmsTemplate.convertAndSend("trgtCase", new TrgtCase(caseId, priority));
+    jmsTemplate.convertAndSend("trgtCase", new TrgtCaseDto(caseId, priority));
 
     return null;
   }

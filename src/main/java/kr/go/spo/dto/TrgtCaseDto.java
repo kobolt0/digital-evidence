@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrgtCase implements Serializable {
+public class TrgtCaseDto implements Serializable {
   public String caseId;
   public String priority;
 }

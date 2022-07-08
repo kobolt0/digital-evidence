@@ -56,8 +56,24 @@ DROP TABLE ACT_RU_EXECUTION;
 DROP TABLE ACT_RE_PROCDEF;
 DROP TABLE ACT_RE_CASE_DEF;
 
+
+DROP TABLE tb_task_run;
+DROP TABLE tb_dummy;
+
 SELECT *
 FROM USER_TABLES
+
+
+
+-- 유저 삭제
+DROP USER camunda CASCADE;
+
+-- CAMUNDA 계정생성, 권한
+GRANT CONNECT,RESOURCE,UNLIMITED TABLESPACE TO camunda IDENTIFIED BY camunda;
+ALTER USER camunda DEFAULT TABLESPACE USERS;
+ALTER USER camunda TEMPORARY TABLESPACE TEMP;
+
+SELECT * FROM ALL_USERS;
 
 */
 
@@ -66,13 +82,13 @@ FROM USER_TABLES
 
 -- task 수행상태 테이블 생성
 CREATE TABLE tb_task_run (
-                             task_instance_id varchar(80) NOT NULL,
                              process_instance_id varchar(80) DEFAULT NULL,
+                             task_instance_id varchar(80) NOT NULL,
                              case_id varchar(20) DEFAULT NULL,
                              task_status varchar(20) DEFAULT NULL,
                              task_start_time varchar(20) DEFAULT NULL,
                              task_end_time varchar(20) DEFAULT NULL,
-                             PRIMARY KEY (task_instance_id)
+                             PRIMARY KEY (task_instance_id, process_instance_id)
 )
 ;
 
@@ -85,7 +101,7 @@ CREATE TABLE tb_dummy (
 )
 ;
 
--- 테스트용 테이블
+-- 테스트용 테이블 인서트
 INSERT INTO tb_dummy (name,val) VALUES ('isProcessEnd', 'Y')
 ;
 

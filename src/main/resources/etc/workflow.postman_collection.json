@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "60e67b89-b950-4851-9b7a-f0f44ba7dc21",
+		"name": "workflow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "startPorc",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8070/test/startPorc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"test",
+						"startPorc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "suspendProcess(ALL)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"variables\": {\r\n    \"aVariable\": {\r\n      \"value\": \"aStringValue\",\r\n      \"type\": \"String\"\r\n    },\r\n    \"anotherVariable\": {\r\n      \"value\": true,\r\n      \"type\": \"Boolean\"\r\n    }\r\n  },\r\n  \"businessKey\": \"myBusinessKey\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8070/test/suspendAllProcess",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"test",
+						"suspendAllProcess"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "suspendProcess",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"variables\": {\r\n    \"aVariable\": {\r\n      \"value\": \"aStringValue\",\r\n      \"type\": \"String\"\r\n    },\r\n    \"anotherVariable\": {\r\n      \"value\": true,\r\n      \"type\": \"Boolean\"\r\n    }\r\n  },\r\n  \"businessKey\": \"myBusinessKey\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8070/test/suspendProcess?processInstanceId=34d137ab-f83e-11ec-accc-2acdc420f0a3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"test",
+						"suspendProcess"
+					],
+					"query": [
+						{
+							"key": "processInstanceId",
+							"value": "34d137ab-f83e-11ec-accc-2acdc420f0a3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resumeProcess(All)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"variables\": {\r\n    \"aVariable\": {\r\n      \"value\": \"aStringValue\",\r\n      \"type\": \"String\"\r\n    },\r\n    \"anotherVariable\": {\r\n      \"value\": true,\r\n      \"type\": \"Boolean\"\r\n    }\r\n  },\r\n  \"businessKey\": \"myBusinessKey\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8070/test/resumeAllProcess",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"test",
+						"resumeAllProcess"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resumeProcess",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"variables\": {\r\n    \"aVariable\": {\r\n      \"value\": \"aStringValue\",\r\n      \"type\": \"String\"\r\n    },\r\n    \"anotherVariable\": {\r\n      \"value\": true,\r\n      \"type\": \"Boolean\"\r\n    }\r\n  },\r\n  \"businessKey\": \"myBusinessKey\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8070/test/resumeProcess?processInstanceId=34d137ab-f83e-11ec-accc-2acdc420f0a3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"test",
+						"resumeProcess"
+					],
+					"query": [
+						{
+							"key": "processInstanceId",
+							"value": "34d137ab-f83e-11ec-accc-2acdc420f0a3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "프로세스시작 메세지생산",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8070/mq/produceMsg?caseId=cast1234&priority=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8070",
+					"path": [
+						"mq",
+						"produceMsg"
+					],
+					"query": [
+						{
+							"key": "caseId",
+							"value": "cast1234"
+						},
+						{
+							"key": "priority",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

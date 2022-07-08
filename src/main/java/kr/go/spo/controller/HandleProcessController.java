@@ -6,9 +6,7 @@ import org.camunda.bpm.engine.*;
 import org.camunda.bpm.engine.impl.context.BpmnExecutionContext;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
-import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
+import org.camunda.bpm.engine.runtime.*;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +35,28 @@ public class HandleProcessController {
     return this.runtimeService;
   }
 
-  // 프로세스 삭제
+    // 프로세스 삭제
+    @GetMapping("/deleteAllProcess")
+    public String deleteAllProcess(HttpServletRequest req, @RequestParam(value="deleteReason", defaultValue="") String deleteReason) {
+
+        List<ProcessInstance> list = this.getRuntimeService().createProcessInstanceQuery().list();
+        for (ProcessInstance pi: list) {
+
+            // ACT_HI_PROCINST 테이블에 정보 insert
+            this.getRuntimeService().deleteProcessInstance(pi.getId(), deleteReason);
+        }
+
+        return null;
+    }
+
+    //프로세스 삭제
+    @GetMapping("/deleteProcess")
+    public String deleteProcess(HttpServletRequest req, @RequestParam(value="processInstanceId", defaultValue="") String processInstanceId
+            , @RequestParam(value="deleteReason", defaultValue="") String deleteReason) {
+        // ACT_HI_PROCINST 테이블에 정보 insert
+        this.getRuntimeService().deleteProcessInstance(processInstanceId,deleteReason);
+        return null;
+    }
 
   // 프로세스 정지
   @GetMapping("/suspendAllProcess")
@@ -103,18 +122,52 @@ public class HandleProcessController {
 //    List<ProcessInstance> obj = getAllRunningProcessInstances(val1);
     ProcessInstanceQuery qry = this.getRuntimeService().createProcessInstanceQuery();
     List<ProcessInstance> list = qry.list();
-    qry.processInstanceId(val1).list();
 //    ActivityInstance ai = runtimeService.getActivityInstance("Activity_virus:b764ed0e-f77d-11ec-8ad8-2acdc420f0a3");
 //    String getId = ai.getId();
 //    String getActivityId = ai.getActivityId();
     for (ProcessInstance pi: list
          ) {
-      pi.getId();
+        log.debug("##@# ProcessInstance");
+        log.debug("##@# [{}]getId", pi.getId());
+        log.debug("##@# [{}]getProcessInstanceId", pi.getProcessInstanceId());
+        log.debug("##@# [{}]getBusinessKey", pi.getBusinessKey());
+        log.debug("##@# [{}]getCaseInstanceId", pi.getCaseInstanceId());
+        log.debug("##@# [{}]getCaseInstanceId", pi.getCaseInstanceId());
 //      runtimeService.suspendProcessInstanceById(pi.getId());
+        log.debug("##@# ProcessInstance END ###########");
     }
-    
-    ///////////////////
-    TaskService taskService = processEngine.getTaskService();
+
+
+
+      List<VariableInstance> list1 = this.getRuntimeService().createVariableInstanceQuery()
+              .processInstanceIdIn()
+              .list();
+
+
+      List<Execution> listex = this.getRuntimeService().createExecutionQuery()
+              .activityId("Activity_virus")
+              .list();
+      ///////////////////
+      TaskService taskService = processEngine.getTaskService();
+      for (Execution ex :
+              listex) {
+          log.debug("##@# Execution");
+          log.debug("##@# [{}]getId", ex.getId());
+          log.debug("##@# [{}]getProcessInstanceId", ex.getProcessInstanceId());
+
+
+
+          Map<String, Object> map = this.getRuntimeService().getVariables(ex.getId());
+          log.debug("##@# [{}]map", map);
+
+          List<Task> taskList = taskService.createTaskQuery().processInstanceId(ex.getProcessInstanceId()).list();
+
+          log.debug("##@# Execution END");
+
+
+      }
+
+
 
     List<Task> listTask = taskService.createTaskQuery().list();
 
@@ -122,6 +175,14 @@ public class HandleProcessController {
     FormService formService = processEngine.getFormService();
     HistoryService historyService = processEngine.getHistoryService();
     ManagementService managementService = processEngine.getManagementService();
+
+    List<Job> obj = managementService.createJobQuery().executionId(listex.get(0).getId()).list();
+      for (Job job :
+           obj) {
+          log.debug(job.getId());
+          log.debug("");
+      }
+
     FilterService filterService = processEngine.getFilterService();
     ExternalTaskService externalTaskService = processEngine.getExternalTaskService();
     CaseService caseService = processEngine.getCaseService();
@@ -168,7 +229,8 @@ public class HandleProcessController {
           , @RequestParam(value="priority", defaultValue="") String priority
 
   ) {
-
+      List<ProcessInstance> list = this.getRuntimeService().createProcessInstanceQuery().list();
+      List<VariableInstance> asdf = this.getRuntimeService().createVariableInstanceQuery().list();
       return null;
   }
 }

@@ -1,6 +1,7 @@
 spring:
   datasource:
     driver-class-name: oracle.jdbc.driver.OracleDriver
+#    url: jdbc:oracle:thin:@124.56.172.37:51521:XE
     url: jdbc:oracle:thin:@localhost:1521:XE
     username: camunda
     password: camunda
@@ -8,6 +9,6 @@ spring:
   activemq:
     user: admin
     password: admin
-    broker-url: tcp://localhost:61616
+    broker-url: tcp://dongck.synology.me:61616
 
 

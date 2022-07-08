@@ -1,6 +1,6 @@
 package kr.go.spo.controller;
 
-import kr.go.spo.dto.TrgtCase;
+import kr.go.spo.dto.TrgtCaseDto;
 import kr.go.spo.service.HandleProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +16,11 @@ public class MsgListenController {
     private final HandleProcessService handleProcessService;
 
     @JmsListener(destination = "trgtCase", containerFactory = "myFactory")
-    public void receiveMessage(TrgtCase trgtCase) {
+    public void receiveMessage(TrgtCaseDto trgtCaseDto) {
 
-        log.debug("##@# {}.receiveMessage {}", this.getClass().getName(), trgtCase.toString());
+        log.debug("##@# {}.receiveMessage {}", this.getClass().getName(), trgtCaseDto.toString());
 
-        ProcessInstance pi = this.handleProcessService.startProcess(trgtCase.getCaseId(), trgtCase.getPriority());
+        ProcessInstance pi = this.handleProcessService.startProcess(trgtCaseDto.getCaseId(), trgtCaseDto.getPriority());
 
         log.debug("##@# {}", pi.toString());
     }

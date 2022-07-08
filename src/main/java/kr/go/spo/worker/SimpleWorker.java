@@ -3,6 +3,7 @@ package kr.go.spo.worker;
 import com.google.gson.Gson;
 import kr.go.spo.common.HttpUtils;
 import kr.go.spo.common.HttpResVo;
+import kr.go.spo.service.TaskRunService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -13,15 +14,16 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * BPNM에 정의된 API URL을 호출하는 worker.
+ * BPNM에 정의된 REST API URL을 호출하는 worker.
+ * REST API 의 결과로 성공/실패 만 받는경우 사용
  * @see kr.go.spo.worker.CommonWorker
  * */
 @Slf4j
 @Service
 public class SimpleWorker extends CommonWorker {
 
-    public SimpleWorker(SqlSessionTemplate sqlSessionTemplate) {
-        super(sqlSessionTemplate);
+    public SimpleWorker(TaskRunService taskRunService) {
+        super(taskRunService);
     }
 
     /** 모델러에 정의된 호출할 rest api URI 변수명 */

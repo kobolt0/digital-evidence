@@ -16,8 +16,8 @@ import java.util.Set;
 @Slf4j
 public class HttpUtils {
 
-    static final int connTimeout = 5000;
-    static final int readTimeout = 3000;
+    static final int connTimeout = 50000;
+    static final int readTimeout = 30000;
 
 
 

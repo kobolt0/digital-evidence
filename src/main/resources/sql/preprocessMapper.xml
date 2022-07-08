@@ -8,63 +8,127 @@
     <insert id="insertTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
         INSERT INTO tb_task_run
         (
-          task_instance_id
-        , process_instance_id
+          process_instance_id
+        , task_instance_id
         , case_id
         , task_status
         , task_start_time
+        , task_suspend_time
         , task_end_time
         )
         VALUES
             (
-              #{taskInstanceId}
+              #{processInstanceId}
+            , #{taskInstanceId}
             , #{caseId}
-            , #{processInstanceId}
             , #{taskStatus}
             , #{taskStartTime}
+            , #{taskSuspendTime}
             , #{taskEndTime}
             )
     </insert>
+
+    <update id="mergeTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
+        MERGE
+            INTO tb_task_run A
+                USING DUAL
+                ON ( A.PROCESS_INSTANCE_ID  = 'process_instance_id'
+                    AND A.TASK_INSTANCE_ID  = 'task_instance_id'
+                    )
+                WHEN MATCHED THEN
+                    UPDATE SET
+                          A.task_status  = #{taskStatus}
+                    <if test='taskStartTime != null'>
+                        , A.task_start_time   = #{taskStartTime}
+                    </if>
+                    <if test='taskSuspendTime != null'>
+                        , A.task_suspend_time = #{taskSuspendTime}
+                    </if>
+                    <if test='taskEndTime != null'>
+                        , A.task_end_time   = #{taskEndTime}
+                    </if>
+                WHEN NOT MATCHED THEN
+                    INSERT
+                        (
+                              process_instance_id
+                            , task_instance_id
+                            , case_id
+                            , task_status
+                            , task_start_time
+                            , task_suspend_time
+                            , task_end_time
+                            )
+                        VALUES
+                            (
+                              #{processInstanceId}
+                            , #{taskInstanceId}
+                            , #{caseId}
+                            , #{taskStatus}
+                            , #{taskStartTime}
+                            , #{taskSuspendTime}
+                            , #{taskEndTime}
+                            )
+    </update>
+
+
     <update id="updateTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
         UPDATE tb_task_run
         SET
-            task_status         = #{taskStatus}
-          , task_end_time       = #{taskEndTime}
+            task_status       = #{taskStatus}
+        <if test='taskStartTime != null'>
+            , task_start_time   = #{taskStartTime}
+        </if>
+        <if test='taskSuspendTime != null'>
+            , task_suspend_time   = #{taskSuspendTime}
+        </if>
+        <if test='taskEndTime != null'>
+            , task_end_time   = #{taskEndTime}
+        </if>
         WHERE 1=1
+          AND process_instance_id = #{processInstanceId}
           AND task_instance_id = #{taskInstanceId}
     </update>
-    <insert id="insertTbFile" parameterType="kr.go.spo.dto.FileDto">
-        INSERT INTO tb_file
+
+
+
+
+
+
+    <insert id="insertTbProcessInstance" parameterType="kr.go.spo.dto.ProcessInstanceDto">
+        INSERT INTO TB_PROCESS_INSTANCE
         (
-            case_id
-        , file_id
-        , file_path
-        , file_size
-        , create_time
-        , first_cate
-        , signature_cate
+          PROCESS_INSTANCE_ID
+        , CASE_ID
+        , STATUS
+        , START_TIME
+        , SUSPEND_TIME
+        , END_TIME
+
         )
         VALUES
             (
-              #{caseId}
-            , #{fileId}
-            , #{filePath}
-            , #{fileSize}
-            , #{createTime}
-            , #{firstCate}
-            , #{signatureCate}
+              #{processInstanceId}
+            , #{caseId}
+            , #{status}
+            , #{startTime}
+            , #{suspendTime}
+            , #{endTime}
             )
     </insert>
-    <update id="updateTbFile" parameterType="kr.go.spo.dto.TaskRunDto">
-        UPDATE tb_file
+    <update id="updateTbProcessInstance" parameterType="kr.go.spo.dto.ProcessInstanceDto">
+        UPDATE TB_PROCESS_INSTANCE
         SET
-            file_path      = #{filePath}
-          , file_size      = #{fileSize}
-          , create_time    = #{createTime}
-          , first_cate     = #{firstCate}
-          , signature_cate = #{signatureCate}
+        status       = #{status}
+        <if test='startTime != null'>
+            , start_time   = #{startTime}
+        </if>
+        <if test='suspendTime != null'>
+            , suspend_time   = #{suspendTime}
+        </if>
+        <if test='endTime != null'>
+            , end_time   = #{endTime}
+        </if>
         WHERE 1=1
-          AND case_id = #{caseId}
-          AND file_id = #{fileId}
+        AND process_instance_id = #{processInstanceId}
     </update>
 </mapper>
