@@ -17,4 +17,5 @@ public class TaskRunDto {
     public String taskStartTime;
     public String taskSuspendTime;
     public String taskEndTime;
+    public String updateTime;
 }

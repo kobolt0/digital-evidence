@@ -5,6 +5,20 @@
 
 <mapper namespace="preprocess">
 
+    <select id="selectTbTaskRunByPk" parameterType="kr.go.spo.dto.TaskRunDto" resultType="kr.go.spo.dto.TaskRunDto" >
+        SELECT
+               PROCESS_INSTANCE_ID
+             , TASK_INSTANCE_ID
+             , CASE_ID
+             , TASK_STATUS
+             , TASK_START_TIME
+             , TASK_SUSPEND_TIME
+             , TASK_END_TIME
+         FROM TB_TASK_RUN
+        WHERE 1=1
+          AND PROCESS_INSTANCE_ID = #{processInstanceId}
+          AND TASK_INSTANCE_ID = #{taskInstanceId}
+    </select>
     <insert id="insertTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
         INSERT INTO tb_task_run
         (
@@ -15,6 +29,7 @@
         , task_start_time
         , task_suspend_time
         , task_end_time
+        , update_time
         )
         VALUES
             (
@@ -25,6 +40,7 @@
             , #{taskStartTime}
             , #{taskSuspendTime}
             , #{taskEndTime}
+            , TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
             )
     </insert>
 
@@ -32,21 +48,22 @@
         MERGE
             INTO tb_task_run A
                 USING DUAL
-                ON ( A.PROCESS_INSTANCE_ID  = 'process_instance_id'
-                    AND A.TASK_INSTANCE_ID  = 'task_instance_id'
+                ON ( A.PROCESS_INSTANCE_ID  = #{processInstanceId}
+                    AND A.TASK_INSTANCE_ID  = #{taskInstanceId}
                     )
                 WHEN MATCHED THEN
                     UPDATE SET
                           A.task_status  = #{taskStatus}
                     <if test='taskStartTime != null'>
-                        , A.task_start_time   = #{taskStartTime}
+                        , A.task_start_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
                     </if>
                     <if test='taskSuspendTime != null'>
-                        , A.task_suspend_time = #{taskSuspendTime}
+                        , A.task_suspend_time = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
                     </if>
                     <if test='taskEndTime != null'>
-                        , A.task_end_time   = #{taskEndTime}
+                        , A.task_end_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
                     </if>
+                        , A.update_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
                 WHEN NOT MATCHED THEN
                     INSERT
                         (
@@ -57,6 +74,7 @@
                             , task_start_time
                             , task_suspend_time
                             , task_end_time
+                            , update_time
                             )
                         VALUES
                             (
@@ -67,6 +85,7 @@
                             , #{taskStartTime}
                             , #{taskSuspendTime}
                             , #{taskEndTime}
+                            , TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
                             )
     </update>
 
@@ -76,14 +95,15 @@
         SET
             task_status       = #{taskStatus}
         <if test='taskStartTime != null'>
-            , task_start_time   = #{taskStartTime}
+            , task_start_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
         </if>
         <if test='taskSuspendTime != null'>
-            , task_suspend_time   = #{taskSuspendTime}
+            , task_suspend_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
         </if>
         <if test='taskEndTime != null'>
-            , task_end_time   = #{taskEndTime}
+            , task_end_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
         </if>
+            , update_time   = TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF3')
         WHERE 1=1
           AND process_instance_id = #{processInstanceId}
           AND task_instance_id = #{taskInstanceId}

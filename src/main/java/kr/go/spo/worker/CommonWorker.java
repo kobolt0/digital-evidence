@@ -16,7 +16,6 @@ import org.camunda.bpm.engine.variable.value.TypedValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -30,7 +29,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public abstract class CommonWorker implements JavaDelegate {
 
-//  protected final SqlSessionTemplate sqlSessionTemplate;
   protected final TaskRunService taskRunService;
 
   /** 타스크인스턴스ID */
@@ -61,7 +59,7 @@ public abstract class CommonWorker implements JavaDelegate {
   @Value("${workflow.preprocess.extractMaxCnt}")
   String strextractMaxCnt ;
   @Value("1")
-  int taskMaxCnt ;
+  int taskMaxCnt ;//  프로세스 수행갯수 제한
 
   @Value("${workflow.preprocess.serverIp}")
   String apiServerIp;
@@ -92,6 +90,7 @@ public abstract class CommonWorker implements JavaDelegate {
 
     //////////////////////////////////////////////////////////////
     // 1. 초기화
+    int cudRslt = -1; // cud 결과 저장용 임시변수.
     // 입력파라메터 Map 설정
     inParamMap = new HashMap<>();
     Set<String> paramNames = execution.getVariableNames();
@@ -120,8 +119,9 @@ public abstract class CommonWorker implements JavaDelegate {
     log.debug("##@#  inParamMap.toString(): " + inParamMap.toString());
 
 
-    //////////////////////////////////////////////////////////////
-    // ## 우선순위 체크
+    // #######################################
+    // # 타스크 할당숫자 제한 로직 시작
+    // 해당타스크에 실행중된 프로세스 인스턴스 숫자가 최대치 초과 :: 현재 프로세스인스턴스 일시정지처리
 //    final String keyPriority = "";
     final String keyStartTime = "processStartTime";
 
@@ -137,21 +137,14 @@ public abstract class CommonWorker implements JavaDelegate {
 
 
 
-    TaskRunDto taskRunVO;
-    taskRunVO = new TaskRunDto(
-            "" + this.taskInstanceId
-            , "" + inParamMap.get("caseId")
-            , "" + this.processInstanceId
-            , ""
-            , ""
-            , ""
-            , ""
-    );
+    TaskRunDto inTaskRunDto;
 
-    // #######################################
-    // # 타스크 할당숫자 제한 로직 시작
-    // 해당타스크에 실행중된 프로세스 인스턴스 숫자가 최대치 초과 :: 현재 프로세스인스턴스 일시정지처리
+    log.debug("#@# active instance cnt[{}]. curr instance[{}]",  listActive.size(), execution.getActivityInstanceId());
+
     if (listActive.size() > taskMaxCnt) {
+
+      execution.setVariable("processStatus", "테스트");
+
       // 일시정지 rest api 호출
       String callUrl = apiServerIp + "/test/suspendProcess?processInstanceId=" + execution.getProcessInstanceId();
       log.debug("#@## HttpUtils.callHttpGet[{}]", callUrl);
@@ -160,8 +153,8 @@ public abstract class CommonWorker implements JavaDelegate {
       if (resVO.getResponsCode() != 200){
         throw new Exception();
       }
-      TaskRunDto taskRunDto;
-      taskRunDto = new TaskRunDto(
+
+      inTaskRunDto = new TaskRunDto(
               this.processInstanceId
               , this.taskInstanceId
               , inParamMap.get("caseId")
@@ -169,85 +162,76 @@ public abstract class CommonWorker implements JavaDelegate {
               , ""
               , CommonUtils.now()
               , ""
+              , ""
       );
 
-      taskRunService.updateTbTaskRun(taskRunDto);
-      execution.setVariable("processStatus", taskRunDto.getTaskStatus());
+      TaskRunDto obj = taskRunService.selectTbTaskRunByPk(inTaskRunDto);
+      log.debug("##@# TaskRunDto obj.{}", obj);
+      if (obj == null ){
+        cudRslt = taskRunService.insertTbTaskRun(inTaskRunDto);
+        log.debug("#@## 상태:대기 insertTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+      }
+      else {
+        cudRslt = taskRunService.updateTbTaskRun(inTaskRunDto);
+        log.debug("#@## 상태:대기 updateTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+      }
+      log.debug("##@# suspend process. bizKey[{}], prc[{}]", execution.getBusinessKey(), execution.getProcessInstanceId());
       return;
 
     }
     // # 타스크 할당숫자 제한 로직 종료 #########
 
-
-
-
-    // 경우 3. 해당타스크의 잡숫자 == 최대치 >> 그냥 진행
-
-    // ## 우선순위 체크 로직 종료 ###############################################
-
-
-
-    // 타스크에 걸린 프로세스가 최대치를 초과하면 가장 후순위 프로세스는 일시정지처리 후, ㅅ
-    // 프로세스 인서턴스중에서 가장 후순위 인
-    runtimeService = execution.getProcessEngine().getRuntimeService();
-    List<Execution> listex = runtimeService.createExecutionQuery().list();
-    for (Execution ex :
-            listex) {
-      log.debug("##@# Execution");
-      log.debug("##@# [{}]getId", ex.getId());
-      log.debug("##@# [{}]getProcessInstanceId", ex.getProcessInstanceId());
-
-      Map<String, Object> map = new HashMap<>(runtimeService.getVariables(ex.getId()));
-      map.put("processInstanceId", ex.getProcessInstanceId());
-      log.debug("##@# [{}]map", map);
-
-
-    }
-
     ///////////////////////////////
 
 
     // 2. 타스크 시작 상태 db Insert
-    taskRunVO = new TaskRunDto(
-            "" + this.taskInstanceId
+    inTaskRunDto = new TaskRunDto(
+             "" + this.processInstanceId
+            , "" + this.taskInstanceId
             , "" + inParamMap.get("caseId")
-            , "" + this.processInstanceId
             , "시작"
-            , "" + new SimpleDateFormat("yyyyMMddHHmmssSS").format(new Date())
+            , CommonUtils.now()
+            , null
             , null
             , null
     );
 
-    //FIXME
-    execution.setVariable("processStatus", "테스트상태");
-    
-    
 
-    log.debug("#@## insertTbTaskRun[{}]", taskRunVO);
-    int insRslt = this.taskRunService.mergeTbTaskRun(taskRunVO);
-    log.debug("##@# insRslt[{}]", insRslt);
+    log.debug("#@## start TASK", inTaskRunDto);
+//    int insRslt = this.taskRunService.mergeTbTaskRun(inTaskRunDto);
+
+//    log.debug("##@# insRslt[{}]", insRslt);
+
+    TaskRunDto selectObj = taskRunService.selectTbTaskRunByPk(inTaskRunDto);
+    log.debug("##@# TaskRunDto obj.{}", selectObj);
+    if (selectObj == null ){
+      cudRslt = taskRunService.insertTbTaskRun(inTaskRunDto);
+      log.debug("#@## 상태:시작 insertTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+    }
+    else {
+      cudRslt = taskRunService.updateTbTaskRun(inTaskRunDto);
+      log.debug("#@## 상태:시작 updateTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+    }
+
 
     // 3. 개별로직 호출
     String rslt = this.excuteMain(execution);
-    log.debug("##@# excuteMain return[{}]", rslt);
+    log.debug("##@# executeMain[{}] return[{}]",execution.getActivityInstanceId(), rslt);
 
     // 4. 타스크 종료 상태 db Update
-    taskRunVO = new TaskRunDto(
-            "" + this.taskInstanceId
-            , "" + this.processInstanceId
+    inTaskRunDto = new TaskRunDto(
+             "" + this.processInstanceId
+            ,"" + this.taskInstanceId
             , "" + inParamMap.get("caseId")
             , rslt
             , null
             , null
-            , "" + new SimpleDateFormat("yyyyMMddHHmmssSS").format(new Date())
+            , CommonUtils.now()
+            , null
     );
 
-    log.debug("#@## this.taskInstanceId[{}]" + this.taskInstanceId);
-
-
-    log.debug("#@## updateTbTaskRun[{}]", taskRunVO);
-    int updRslt = this.taskRunService.updateTbTaskRun(taskRunVO);
-    log.debug("##@# updRslt[{}]", updRslt);
+    cudRslt = this.taskRunService.updateTbTaskRun(inTaskRunDto);
+    log.debug("#@## 상태:종료 updateTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
 
     // 4. 리턴 파라메터 설정
     execution.setVariable("extractCnt", this.extractCnt);
@@ -262,15 +246,28 @@ public abstract class CommonWorker implements JavaDelegate {
     // 경우 1. 해당타스크의 잡숫자가 최대치 미만 >> 우선순위로 인한 일시정지상태의 프로세스중에서 가장 우선순위가 놓은 것을 재실행
 
 
+    //fixme 테스트소스
+    List<Execution> listTEst = runtimeService.createExecutionQuery()
+            .activityId(execution.getCurrentActivityId())
+            .list()
+            ;
+    List<Execution> listSuspendedtest = runtimeService.createExecutionQuery()
+            .activityId(execution.getCurrentActivityId())
+            .suspended()
+            .list()
+            ;
+
+
     // 대기중인 작업 목록
     List<Execution> listSuspended = runtimeService.createExecutionQuery()
             .activityId(execution.getCurrentActivityId())
             .suspended()
-            .variableValueEquals("processStatus","대기")
+//            .variableValueEquals("processStatus","대기")
+            .variableValueNotEquals("processStatus","사용자임의정지")
             .list();
     // 최우선 프로세스 뽑아내기
 
-    log.debug("##@# listSuspended {}", listSuspended.size());
+    log.debug("##@# listSuspended[{}] cnt:{}", execution.getActivityInstanceId(), listSuspended.size());
 
     String trgtInstId;  // 처리대상 프로세스인스턴스 아이디
     Execution execPriv;  // 이전 Execution 임시객체 (정렬 용도)
@@ -281,7 +278,9 @@ public abstract class CommonWorker implements JavaDelegate {
     for (Execution execCurr :
             listSuspended) {
       if (execPriv == null){
+        log.debug("##@# resume prc.");
         execPriv = execCurr;
+        trgtInstId = execCurr.getProcessInstanceId();
       }
       else {
         // 비교기준문자열
@@ -299,6 +298,7 @@ public abstract class CommonWorker implements JavaDelegate {
 
     // 최우선 프로세스 재시작
     if (trgtInstId != null){
+      log.debug("##@# resume process[{}]", trgtInstId);
       runtimeService.activateProcessInstanceById(trgtInstId);
     }
 

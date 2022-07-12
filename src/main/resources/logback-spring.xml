@@ -2,9 +2,22 @@
 <configuration scan="true" scanPeriod="30 seconds">
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <!--
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] : %msg%n</pattern>
+            -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%thread][%-3level %logger{5}]%msg %n</pattern>
         </encoder>
+        <filter class="kr.go.spo.config.LogbackFilter"/>
     </appender>
+    <logger name="org.springframework" level="OFF" />
+    <logger name="org.mybatis.spring" level="OFF" />
+
+    <logger name="jdbc"                level="OFF" />
+    <logger name="jdbc.sqlonly"        level="OFF" />  <!-- 파라미터를 셋팅해서 출력-->
+    <logger name="jdbc.resultsettable" level="off" />  <!-- 결과값을 보여줌-->
+    <logger name="jdbc.sqltiming"      level="DEBUG" />
+    <logger name="log4jdbc.debug"      level="DEBUG" />
+
     <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>

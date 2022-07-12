@@ -1,10 +1,13 @@
 package kr.go.spo.service;
 
+import kr.go.spo.common.CommonDao;
 import kr.go.spo.dto.TaskRunDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * REST 컨트롤로 테스트
@@ -13,27 +16,32 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TaskRunService {
-    private final SqlSessionTemplate sqlSessionTemplate;
+    private final CommonDao commonDao;
 
 
+    public TaskRunDto selectTbTaskRunByPk(TaskRunDto taskRunDto) {
+        TaskRunDto obj = commonDao.selectOne("preprocess.selectTbTaskRunByPk", taskRunDto);
+        return obj;
+    }
+
+    @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int insertTbTaskRun(TaskRunDto taskRunDto) {
-        int cudRslt = sqlSessionTemplate.update("preprocess.insertTbTaskRun", taskRunDto);
-        log.debug("##@# cudRslt.{}", cudRslt);
+        int cudRslt = commonDao.insert("preprocess.insertTbTaskRun", taskRunDto);
+//        log.debug("##@# @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)");
         return cudRslt;
     }
 
+    @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int mergeTbTaskRun(TaskRunDto taskRunDto) {
-        int cudRslt = sqlSessionTemplate.update("preprocess.mergeTbTaskRun", taskRunDto);
-        log.debug("##@# cudRslt.{}", cudRslt);
+        int cudRslt = commonDao.update("preprocess.mergeTbTaskRun", taskRunDto);
         return cudRslt;
     }
 
 
+    @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int updateTbTaskRun(TaskRunDto taskRunDto) {
-        int cudRslt = sqlSessionTemplate.update("preprocess.updateTbTaskRun", taskRunDto);
-        log.debug("##@# cudRslt.{}", cudRslt);
+        int cudRslt = commonDao.update("preprocess.updateTbTaskRun", taskRunDto);
         return cudRslt;
     }
-
 
 }

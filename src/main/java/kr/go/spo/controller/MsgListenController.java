@@ -18,11 +18,11 @@ public class MsgListenController {
     @JmsListener(destination = "trgtCase", containerFactory = "myFactory")
     public void receiveMessage(TrgtCaseDto trgtCaseDto) {
 
-        log.debug("##@# {}.receiveMessage {}", this.getClass().getName(), trgtCaseDto.toString());
+        log.debug("##@# JMS receiveMessage {}.{}", this.getClass().getName(), trgtCaseDto.toString());
 
         ProcessInstance pi = this.handleProcessService.startProcess(trgtCaseDto.getCaseId(), trgtCaseDto.getPriority());
 
-        log.debug("##@# {}", pi.toString());
+        log.debug("##@# start process {}", pi.toString());
     }
 
 }

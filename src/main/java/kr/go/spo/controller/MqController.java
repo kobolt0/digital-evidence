@@ -26,8 +26,10 @@ public class MqController {
           , @RequestParam(value="priority", defaultValue="") String priority
   ) {
 
+    TrgtCaseDto trgtCaseDto = new TrgtCaseDto(caseId, priority);
     jmsTemplate.setPubSubDomain(false);
-    jmsTemplate.convertAndSend("trgtCase", new TrgtCaseDto(caseId, priority));
+    jmsTemplate.convertAndSend("trgtCase", trgtCaseDto);
+    log.debug("##@# JMS produceMsg [{}]", trgtCaseDto);
 
     return null;
   }
