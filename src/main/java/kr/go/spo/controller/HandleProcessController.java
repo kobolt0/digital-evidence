@@ -1,5 +1,8 @@
 package kr.go.spo.controller;
 
+import kr.go.spo.common.CommonDao;
+import kr.go.spo.service.HandleProcessService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.*;
@@ -8,6 +11,7 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.*;
 import org.camunda.bpm.engine.task.Task;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,11 +26,13 @@ import java.util.Map;
  * REST 컨트롤로 테스트
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/test")
 public class HandleProcessController {
 
   private RuntimeService runtimeService;
+  private final HandleProcessService handleProcessService;
 
   private RuntimeService getRuntimeService(){
     if (this.runtimeService == null){
@@ -115,7 +121,7 @@ public class HandleProcessController {
 
   // 진행중인 프로세스 접근
 
-  @GetMapping("/runningProc")
+//  @GetMapping("/runningProc")
   public String runningProc(HttpServletRequest req, @RequestParam(value="val1", defaultValue="") String val1) {
     log.debug("##@# TEST. {}", req.getRequestURL());
     ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
@@ -223,14 +229,19 @@ public class HandleProcessController {
     return processInstances;
   }
 
+  // 디비상태는 재시작인데 실제로는 멈춰있는 프로세스를 재시작한다.
+  @Scheduled(fixedDelay = 5000, initialDelay = 5000)
+//    @GetMapping("/runningProc")
+  public void chkSuspendedProcess() {
+      log.debug("##@# chkSuspendedProcess start");
+      try {
+          this.handleProcessService.chkSuspendedProcess();
+      }
+      catch (Exception e){
+          e.printStackTrace();
+          throw e;
+      }
 
-  public String produceMsg(HttpServletRequest req
-          , @RequestParam(value="caseId", defaultValue="") String caseId
-          , @RequestParam(value="priority", defaultValue="") String priority
-
-  ) {
-      List<ProcessInstance> list = this.getRuntimeService().createProcessInstanceQuery().list();
-      List<VariableInstance> asdf = this.getRuntimeService().createVariableInstanceQuery().list();
-      return null;
+      log.debug("##@# chkSuspendedProcess END");
   }
 }

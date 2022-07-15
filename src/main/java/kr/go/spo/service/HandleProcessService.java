@@ -1,22 +1,16 @@
 package kr.go.spo.service;
 
+import kr.go.spo.common.CommonDao;
+import kr.go.spo.dto.ProcessInstanceDto;
+import kr.go.spo.dto.TaskRunDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.BpmPlatform;
-import org.camunda.bpm.engine.*;
-import org.camunda.bpm.engine.impl.context.BpmnExecutionContext;
-import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
-import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
-import org.camunda.bpm.engine.task.Task;
+import org.camunda.bpm.engine.ManagementService;
+import org.camunda.bpm.engine.ProcessEngines;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.runtime.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +19,12 @@ import java.util.Map;
  * REST 컨트롤로 테스트
  */
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class HandleProcessService {
 
   private RuntimeService runtimeService;
+  private final CommonDao commonDao;
 
   private RuntimeService getRuntimeService(){
     if (this.runtimeService == null){
@@ -85,9 +81,27 @@ public class HandleProcessService {
             .businessKey(caseId)
             .executeWithVariablesInReturn()
             ;
-
     return instance;
   }
 
 
+    public void chkSuspendedProcess() {
+        log.debug("##@# {}" , this.getClass().getName());
+        List<TaskRunDto> list = this.commonDao.selectList("selectListChkSuspendedProcess", null);
+        log.debug("##@# chkSuspendedProcess size.{}", list.size());
+
+        for (TaskRunDto dto : list) {
+
+            //프로세스가 정지상태인지 확인
+            boolean cond = this.getRuntimeService().createProcessInstanceQuery()
+                    .processInstanceId(dto.getProcessInstanceId())
+                    .singleResult()
+                    .isSuspended();
+            log.debug("##@# isResumeTrg? {} pid[{}]", cond, dto.getProcessInstanceId());
+            if (cond){
+                this.getRuntimeService().activateProcessInstanceById(dto.getProcessInstanceId());
+                log.debug("##@# activateProcessInstance id[{}]", dto.getProcessInstanceId());
+            }
+        }
+    }
 }

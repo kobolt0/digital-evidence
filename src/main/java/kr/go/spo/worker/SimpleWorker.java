@@ -3,15 +3,19 @@ package kr.go.spo.worker;
 import com.google.gson.Gson;
 import kr.go.spo.common.HttpUtils;
 import kr.go.spo.common.HttpResVo;
+import kr.go.spo.service.ProcessInstanceService;
 import kr.go.spo.service.TaskRunService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.variable.value.TypedValue;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * BPNM에 정의된 REST API URL을 호출하는 worker.
@@ -22,8 +26,8 @@ import java.util.Map;
 @Service
 public class SimpleWorker extends CommonWorker {
 
-    public SimpleWorker(TaskRunService taskRunService) {
-        super(taskRunService);
+    public SimpleWorker(ProcessInstanceService processInstanceService, TaskRunService taskRunService) {
+        super(processInstanceService, taskRunService);
     }
 
     /** 모델러에 정의된 호출할 rest api URI 변수명 */
@@ -34,18 +38,29 @@ public class SimpleWorker extends CommonWorker {
 
     /** 개별로직 구현 */
     @Override
-    public String excuteMain(DelegateExecution execution) {
-
-        log.debug("#@## END excuteMain ################################");
+    public String executeMain(DelegateExecution execution) {
+        log.debug("#@## Start excuteMain ################################");
         log.debug("#@## taskNm: " + execution.getBpmnModelElementInstance().getName());
+
+        // 입력파라메터 Map 설정
+        Map<String, String> inParamMap = new HashMap<>();
+        Set<String> paramNames = execution.getVariableNames();
+        for (String name : paramNames) {
+            if (execution.getVariable(name) == null) {
+                inParamMap.put(name, null);
+            } else {
+                TypedValue tval = execution.getVariableTyped(name);
+                inParamMap.put(name, tval.getValue().toString());
+            }
+        }
         log.debug("#@## inParamMap " + inParamMap);
         log.debug("#@## getActivityInstanceId: " + execution.getActivityInstanceId());
         log.debug("#@## ### ########## ################################");
 
         // rest api 호출
         String callUrl = apiServerIp + inParamMap.get(this.keyApiUri) + HttpUtils.map2GetParam(inParamMap);
-        log.debug("#@## HttpUtils.callHttpGet[{}]", apiServerIp + inParamMap.get(this.keyApiUri));
-        HttpResVo resVO = HttpUtils.callHttpGet(apiServerIp + inParamMap.get(this.keyApiUri));  //호출
+        log.debug("#@## HttpUtils.callHttpGet[{}]", callUrl);
+        HttpResVo resVO = HttpUtils.callHttpGet(callUrl);  //호출
         log.debug("#@## HttpUtils.callHttpGet END getResponsCode:[{}]  getResponsCode[{}]  getContent[{}]", resVO.getResponsCode(), resVO.getResponsCode(), resVO.getContent());
         String resultStr = resVO.getResponsCode() == 200 ? "정상종료" : "오류";
 

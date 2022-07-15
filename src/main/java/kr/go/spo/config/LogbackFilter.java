@@ -28,6 +28,8 @@ public class LogbackFilter extends Filter<ILoggingEvent> {
         denyConition = denyConition || event.getLoggerName().contains("selectHistoricVariableInstance");
         denyConition = denyConition || event.getLoggerName().contains("ActiveMQSession");
 
+//        denyConition = false;
+
 
         if (denyConition) {
             return FilterReply.DENY;

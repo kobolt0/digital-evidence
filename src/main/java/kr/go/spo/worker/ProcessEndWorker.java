@@ -24,7 +24,7 @@ public class ProcessEndWorker implements JavaDelegate {
                 , "종료"
                 ,null
                 ,null
-                ,""+ CommonUtils.now()
+                ,"Y"
         ) ;
 
         //프로세스인스턴스 디비 인서트

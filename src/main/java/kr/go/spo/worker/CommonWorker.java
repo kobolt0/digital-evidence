@@ -3,7 +3,9 @@ package kr.go.spo.worker;
 import kr.go.spo.common.CommonUtils;
 import kr.go.spo.common.HttpResVo;
 import kr.go.spo.common.HttpUtils;
+import kr.go.spo.dto.ProcessInstanceDto;
 import kr.go.spo.dto.TaskRunDto;
+import kr.go.spo.service.ProcessInstanceService;
 import kr.go.spo.service.TaskRunService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,42 +31,21 @@ import java.util.*;
 @RequiredArgsConstructor
 public abstract class CommonWorker implements JavaDelegate {
 
+  protected final ProcessInstanceService processInstanceService;
   protected final TaskRunService taskRunService;
 
-  /** 타스크인스턴스ID */
-  protected String taskInstanceId = null;
 
-  /** 프로세스인스턴스ID */
-  protected String processInstanceId = null;
-
-  /** 입력파라메터 Map (워크플로우에서 입력받은) */
-  Map<String, String> inParamMap = null;
-
-  /** 압축해재수행 횟수 */
-  protected int extractCnt = 0;
-
-  /** 압축반복 종료 여부 */
-  protected boolean extractEndYn = false;
-
-
-  /**
-   * [압축해재수행횟수]를 변경하고, [압축반복 종료 여부]를 갱신
-   */
-  protected void increaseExtractCnt(int extractCnt) {
-    this.extractCnt = extractCnt;
-    this.extractEndYn = (extractCnt >= this.extractMaxCnt);
-  }
   @Value("${workflow.preprocess.extractMaxCnt}")
   int extractMaxCnt ;
   @Value("${workflow.preprocess.extractMaxCnt}")
   String strextractMaxCnt ;
-  @Value("1")
+  @Value("8")
   int taskMaxCnt ;//  프로세스 수행갯수 제한
 
   @Value("${workflow.preprocess.serverIp}")
   String apiServerIp;
 
-  abstract protected String excuteMain(DelegateExecution execution) throws Exception;
+  abstract protected String executeMain(DelegateExecution execution) throws Exception;
 
 
   /**
@@ -85,6 +66,7 @@ public abstract class CommonWorker implements JavaDelegate {
     log.debug("##@#  getId: " + execution.getId());
     log.debug("##@#  getProcessInstanceId: " + execution.getProcessInstanceId());
     log.debug("##@#  getProcessDefinitionId: " + execution.getProcessInstance().getProcessDefinitionId());
+    log.debug("##@#  this.toString(): " + this.toString());
     log.debug("#@##################################");
     log.debug("\n");
 
@@ -92,7 +74,7 @@ public abstract class CommonWorker implements JavaDelegate {
     // 1. 초기화
     int cudRslt = -1; // cud 결과 저장용 임시변수.
     // 입력파라메터 Map 설정
-    inParamMap = new HashMap<>();
+    Map<String, String> inParamMap = new HashMap<>();
     Set<String> paramNames = execution.getVariableNames();
     for (String name : paramNames) {
       if (execution.getVariable(name) == null) {
@@ -102,21 +84,15 @@ public abstract class CommonWorker implements JavaDelegate {
         inParamMap.put(name, tval.getValue().toString());
       }
     }
-
-
-    // 인스턴스id 설정
-    this.processInstanceId = execution.getProcessInstanceId();
-    this.taskInstanceId = execution.getActivityInstanceId();
-
-    // 압축해재수행 횟수 설정
-    IntegerValue ivExCnt = execution.getVariableTyped("extractCnt");
-    if (ivExCnt != null) {
-      increaseExtractCnt(ivExCnt.getValue());
-    }
-
-    log.debug("\n");
-    log.debug("\n");
     log.debug("##@#  inParamMap.toString(): " + inParamMap.toString());
+
+
+
+    String processInstanceId = execution.getProcessInstanceId();  // 프로세스인스턴스ID
+    String taskActivityId = execution.getCurrentActivityId();  // 타스크액티비티ID
+    String bizKey = execution.getBusinessKey();  // 비지니스 키
+
+    TaskRunDto inTaskRunDto;
 
 
     // #######################################
@@ -136,14 +112,18 @@ public abstract class CommonWorker implements JavaDelegate {
             .list();
 
 
+    // incident 상태인건 제외
+    if (listActive.size() > taskMaxCnt) {
+      for(int i = listActive.size()-1; i > -1; i--){
+        if(runtimeService.createIncidentQuery().processInstanceId(listActive.get(i).getProcessInstanceId()).list().size() > 0){
+          listActive.remove(i);
+        }
+      } // end for
+    }
 
-    TaskRunDto inTaskRunDto;
-
-    log.debug("#@# active instance cnt[{}]. curr instance[{}]",  listActive.size(), execution.getActivityInstanceId());
+    log.debug("#@# active instance cnt[{}]. curr inst[{}][{}][{}]",  listActive.size(), taskActivityId, bizKey, processInstanceId);
 
     if (listActive.size() > taskMaxCnt) {
-
-      execution.setVariable("processStatus", "테스트");
 
       // 일시정지 rest api 호출
       String callUrl = apiServerIp + "/test/suspendProcess?processInstanceId=" + execution.getProcessInstanceId();
@@ -155,8 +135,9 @@ public abstract class CommonWorker implements JavaDelegate {
       }
 
       inTaskRunDto = new TaskRunDto(
-              this.processInstanceId
-              , this.taskInstanceId
+              processInstanceId
+              , taskActivityId
+              , execution.getActivityInstanceId()
               , inParamMap.get("caseId")
               , "대기"
               , ""
@@ -169,11 +150,11 @@ public abstract class CommonWorker implements JavaDelegate {
       log.debug("##@# TaskRunDto obj.{}", obj);
       if (obj == null ){
         cudRslt = taskRunService.insertTbTaskRun(inTaskRunDto);
-        log.debug("#@## 상태:대기 insertTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+        log.debug("#@## 상태:대기 insertTbTaskRun[{}] buzikey[{}] result[{}] param[{}]",execution.getBusinessKey(),execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
       }
       else {
         cudRslt = taskRunService.updateTbTaskRun(inTaskRunDto);
-        log.debug("#@## 상태:대기 updateTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
+        log.debug("#@## 상태:대기 updateTbTaskRun[{}] buzikey[{}] result[{}] param[{}]",execution.getBusinessKey(),execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
       }
       log.debug("##@# suspend process. bizKey[{}], prc[{}]", execution.getBusinessKey(), execution.getProcessInstanceId());
       return;
@@ -186,9 +167,10 @@ public abstract class CommonWorker implements JavaDelegate {
 
     // 2. 타스크 시작 상태 db Insert
     inTaskRunDto = new TaskRunDto(
-             "" + this.processInstanceId
-            , "" + this.taskInstanceId
-            , "" + inParamMap.get("caseId")
+             processInstanceId
+            , taskActivityId
+            , execution.getActivityInstanceId()
+            , inParamMap.get("caseId")
             , "시작"
             , CommonUtils.now()
             , null
@@ -215,14 +197,15 @@ public abstract class CommonWorker implements JavaDelegate {
 
 
     // 3. 개별로직 호출
-    String rslt = this.excuteMain(execution);
+    String rslt = this.executeMain(execution);
     log.debug("##@# executeMain[{}] return[{}]",execution.getActivityInstanceId(), rslt);
 
     // 4. 타스크 종료 상태 db Update
     inTaskRunDto = new TaskRunDto(
-             "" + this.processInstanceId
-            ,"" + this.taskInstanceId
-            , "" + inParamMap.get("caseId")
+              processInstanceId
+            , taskActivityId
+            , execution.getActivityInstanceId()
+            , inParamMap.get("caseId")
             , rslt
             , null
             , null
@@ -231,11 +214,7 @@ public abstract class CommonWorker implements JavaDelegate {
     );
 
     cudRslt = this.taskRunService.updateTbTaskRun(inTaskRunDto);
-    log.debug("#@## 상태:종료 updateTbTaskRun[{}] result[{}] param[{}]",execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
-
-    // 4. 리턴 파라메터 설정
-    execution.setVariable("extractCnt", this.extractCnt);
-    execution.setVariable("extractEndYn", this.extractEndYn);
+    log.debug("#@## 상태:종료 updateTbTaskRun[{}] buzikey[{}] result[{}] param[{}]",execution.getBusinessKey(),execution.getActivityInstanceId(), cudRslt, inTaskRunDto);
 
 
 
@@ -244,19 +223,6 @@ public abstract class CommonWorker implements JavaDelegate {
     // ###############################################
     // # 대기중인 프로세스 중에 하나뽑아서 재시작 처리
     // 경우 1. 해당타스크의 잡숫자가 최대치 미만 >> 우선순위로 인한 일시정지상태의 프로세스중에서 가장 우선순위가 놓은 것을 재실행
-
-
-    //fixme 테스트소스
-    List<Execution> listTEst = runtimeService.createExecutionQuery()
-            .activityId(execution.getCurrentActivityId())
-            .list()
-            ;
-    List<Execution> listSuspendedtest = runtimeService.createExecutionQuery()
-            .activityId(execution.getCurrentActivityId())
-            .suspended()
-            .list()
-            ;
-
 
     // 대기중인 작업 목록
     List<Execution> listSuspended = runtimeService.createExecutionQuery()
@@ -286,12 +252,17 @@ public abstract class CommonWorker implements JavaDelegate {
         // 비교기준문자열
         String criterionPriv = runtimeService.getVariable(execPriv.getProcessInstanceId(), keyStartTime).toString();
         String criterionCurr = runtimeService.getVariable(execCurr.getProcessInstanceId(), keyStartTime).toString();
+        log.debug("##@# criterionPriv[{}]", criterionPriv);
+        log.debug("##@# criterionCurr[{}]", criterionCurr);
 
-        if (criterionCurr.compareTo(criterionPriv) > 0 ){
+        if (criterionCurr.compareTo(criterionPriv) < 0 ){
           trgtInstId = execCurr.getProcessInstanceId();
+          log.debug("##@# win criterionCurr[{}]", criterionCurr);
+
         }
         else {
           trgtInstId = execPriv.getProcessInstanceId();
+          log.debug("##@# win criterionPriv[{}]", criterionPriv);
         }
       }
     } // end foreach
@@ -300,6 +271,19 @@ public abstract class CommonWorker implements JavaDelegate {
     if (trgtInstId != null){
       log.debug("##@# resume process[{}]", trgtInstId);
       runtimeService.activateProcessInstanceById(trgtInstId);
+
+      // 프로세스 상태 디비업데이트
+      ProcessInstanceDto processInstanceDto = new ProcessInstanceDto(
+              trgtInstId
+              , null
+              , "재시작"
+              ,null
+              ,null
+              ,null
+      ) ;
+
+      //프로세스인스턴스 디비 인서트
+      this.processInstanceService.updateTbProcessInstance(processInstanceDto);
     }
 
 

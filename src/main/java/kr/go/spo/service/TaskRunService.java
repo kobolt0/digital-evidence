@@ -27,6 +27,7 @@ public class TaskRunService {
     @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int insertTbTaskRun(TaskRunDto taskRunDto) {
         int cudRslt = commonDao.insert("preprocess.insertTbTaskRun", taskRunDto);
+        commonDao.insert("preprocess.insertTbTaskRunHstByPk", taskRunDto);
 //        log.debug("##@# @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)");
         return cudRslt;
     }
@@ -34,6 +35,7 @@ public class TaskRunService {
     @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int mergeTbTaskRun(TaskRunDto taskRunDto) {
         int cudRslt = commonDao.update("preprocess.mergeTbTaskRun", taskRunDto);
+        commonDao.insert("preprocess.insertTbTaskRunHstByPk", taskRunDto);
         return cudRslt;
     }
 
@@ -41,6 +43,7 @@ public class TaskRunService {
     @Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor=Exception.class)
     public int updateTbTaskRun(TaskRunDto taskRunDto) {
         int cudRslt = commonDao.update("preprocess.updateTbTaskRun", taskRunDto);
+        commonDao.insert("preprocess.insertTbTaskRunHstByPk", taskRunDto);
         return cudRslt;
     }
 
