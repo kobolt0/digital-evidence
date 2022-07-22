@@ -2,16 +2,14 @@ spring:
   datasource:
 #    driver-class-name: oracle.jdbc.driver.OracleDriver
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:oracle:thin:@124.56.172.37:51521:XE
-#    url: jdbc:oracle:thin:@localhost:1521:XE
+    url: jdbc:log4jdbc:oracle:thin:@dongck.synology.me:51521:XE
     username: camunda
     password: camunda
 
   activemq:
     user: admin
     password: admin
-#    broker-url: tcp://dongck.synology.me:61616
-    broker-url: tcp://localhost:61616
+    broker-url: tcp://dongck.synology.me:61616
 
 
 

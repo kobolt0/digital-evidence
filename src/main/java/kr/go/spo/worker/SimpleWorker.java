@@ -1,6 +1,6 @@
 package kr.go.spo.worker;
 
-import com.google.gson.Gson;
+import camundajar.impl.com.google.gson.Gson;
 import kr.go.spo.common.HttpUtils;
 import kr.go.spo.common.HttpResVo;
 import kr.go.spo.service.ProcessInstanceService;
@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.variable.value.TypedValue;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

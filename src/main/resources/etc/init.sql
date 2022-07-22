@@ -1,4 +1,7 @@
 -- 프로젝트 초기화 --
+SELECT * FROM USER_TABLES;
+
+-- 프로젝트 초기화 --
 
 /* -- DROP TABLES --
 DROP TABLE tb_task_run;
@@ -57,56 +60,69 @@ DROP TABLE ACT_RE_PROCDEF;
 DROP TABLE ACT_RE_CASE_DEF;
 
 
-DROP TABLE tb_task_run;
+DROP TABLE TB_PROCESS_INSTANCE;
+DROP TABLE TB_TASK_RUN;
+DROP TABLE TB_TASK_RUN_HST;
 DROP TABLE tb_dummy;
-
-SELECT *
-FROM USER_TABLES
-
-
-
--- 유저 삭제
-DROP USER camunda CASCADE;
-
--- CAMUNDA 계정생성, 권한
-GRANT CONNECT,RESOURCE,UNLIMITED TABLESPACE TO camunda IDENTIFIED BY camunda;
-ALTER USER camunda DEFAULT TABLESPACE USERS;
-ALTER USER camunda TEMPORARY TABLESPACE TEMP;
-
-SELECT * FROM ALL_USERS;
-
 */
-
 --------------
 -- 테이블생성
+-- CAMUNDA.TB_PROCESS_INSTANCE definition
 
+CREATE TABLE "TB_PROCESS_INSTANCE"
+(
+    "PROCESS_INSTANCE_ID" VARCHAR2(80) DEFAULT NULL,
+    "CASE_ID" VARCHAR2(20) DEFAULT NULL,
+    "STATUS" VARCHAR2(20) DEFAULT NULL,
+    "START_TIME" VARCHAR2(20) DEFAULT NULL,
+    "SUSPEND_TIME" VARCHAR2(20) DEFAULT NULL,
+    "END_TIME" VARCHAR2(20) DEFAULT NULL,
+    "UPDATE_TIME" VARCHAR2(20) NOT NULL,
+    PRIMARY KEY ("PROCESS_INSTANCE_ID")
+)
+;
 -- task 수행상태 테이블 생성
-CREATE TABLE tb_task_run (
-                             process_instance_id varchar(80) DEFAULT NULL,
-                             task_instance_id varchar(80) NOT NULL,
-                             case_id varchar(20) DEFAULT NULL,
-                             task_status varchar(20) DEFAULT NULL,
-                             task_start_time varchar(20) DEFAULT NULL,
-                             task_suspend_time varchar(20) DEFAULT NULL,
-                             task_end_time varchar(20) DEFAULT NULL,
-                             PRIMARY KEY (process_instance_id, task_instance_id)
+CREATE TABLE "TB_TASK_RUN"
+(
+    "PROCESS_INSTANCE_ID" VARCHAR2(80) NOT NULL,
+    "TASK_ACTIVITY_ID" VARCHAR2(80) NOT NULL,
+    "TASK_INSTANCE_ID" VARCHAR2(80) NOT NULL,
+    "CASE_ID" VARCHAR2(20) DEFAULT NULL,
+    "TASK_STATUS" VARCHAR2(20) DEFAULT NULL,
+    "TASK_START_TIME" VARCHAR2(20) DEFAULT NULL,
+    "TASK_SUSPEND_TIME" VARCHAR2(20) DEFAULT NULL,
+    "TASK_END_TIME" VARCHAR2(20) DEFAULT NULL,
+    "UPDATE_TIME" VARCHAR2(20) NOT NULL,
+    PRIMARY KEY ("PROCESS_INSTANCE_ID","TASK_ACTIVITY_ID")
 )
 ;
-
-
--- 프로세스인스턴스
-CREATE TABLE TB_PROCESS_INSTANCE (
-                                     PROCESS_INSTANCE_ID VARCHAR(80) DEFAULT NULL,
-                                     CASE_ID VARCHAR(20) DEFAULT NULL,
-                                     STATUS VARCHAR(20) DEFAULT NULL,
-                                     START_TIME VARCHAR(20) DEFAULT NULL,
-                                     SUSPEND_TIME VARCHAR(20) DEFAULT NULL,
-                                     END_TIME VARCHAR(20) DEFAULT NULL,
-                                     PRIMARY KEY (PROCESS_INSTANCE_ID)
+-- task 수행상태 테이블 생성
+CREATE TABLE "TB_TASK_RUN_HST"
+(
+    "SEQ" NUMBER NOT NULL,
+    "PROCESS_INSTANCE_ID" VARCHAR2(80) NOT NULL,
+    "TASK_ACTIVITY_ID" VARCHAR2(80) NOT NULL,
+    "TASK_INSTANCE_ID" VARCHAR2(80) NOT NULL,
+    "CASE_ID" VARCHAR2(20) DEFAULT NULL,
+    "TASK_STATUS" VARCHAR2(20) DEFAULT NULL,
+    "TASK_START_TIME" VARCHAR2(20) DEFAULT NULL,
+    "TASK_SUSPEND_TIME" VARCHAR2(20) DEFAULT NULL,
+    "TASK_END_TIME" VARCHAR2(20) DEFAULT NULL,
+    "UPDATE_TIME" VARCHAR2(20) NOT NULL,
+    PRIMARY KEY ("SEQ")
 )
 ;
+-- 타스크이력 시퀀스 생성
+CREATE SEQUENCE SEQ_TASK_RUN_HST
+    INCREMENT BY 1
+    START WITH 1
+    MINVALUE 1
+    MAXVALUE 99999
+    NOCYCLE
+       NOCACHE
+       NOORDER;
 
-
+;
 -- 테스트용 더미 테이블. 테스트용 더미 rest api 리턴값
 CREATE TABLE tb_dummy (
                           name varchar(100) NOT NULL,
@@ -115,14 +131,53 @@ CREATE TABLE tb_dummy (
 )
 ;
 
--- 테스트용 테이블 인서트
+-- 테스트용 테이블
 INSERT INTO tb_dummy (name,val) VALUES ('isProcessEnd', 'Y');
-INSERT INTO tb_dummy (name,val) VALUES ('sleepTime', '10');
+INSERT INTO tb_dummy (name,val) VALUES ('sleepTime', '8');
 
 -- 더미테이블 값변경
-UPDATE tb_dummy SET val= 'Y' WHERE name = 'isProcessEnd'; --종료
-UPDATE tb_dummy SET val= 'N' WHERE name = 'isProcessEnd'; --무한
+UPDATE tb_dummy SET val= 'Y' WHERE name = 'isProcessEnd'; -- 종료
+UPDATE tb_dummy SET val= 'N' WHERE name = 'isProcessEnd'; -- 무한
 ;
-UPDATE tb_dummy SET val= '10' WHERE name = 'sleepTime';
+UPDATE tb_dummy SET val= '8' WHERE name = 'sleepTime'; -- 더미 대기시간
+--------------------------------------------------------------------------------------------------
+SELECT *
+FROM tb_task_run
+ORDER BY TASK_START_TIME
 ;
 
+SELECT * FROM tb_dummy;
+
+;
+SELECT * FROM ACT_RU_EXECUTION;
+SELECT * FROM ACT_RU_TASK;
+SELECT * FROM ACT_HI_OP_LOG ahol ;
+SELECT * FROM ACT_RU_EXECUTION;
+SELECT * FROM ACT_RU_EXECUTION;
+
+
+
+SELECT 'SELECT * FROM ' || TABLE_NAME ||';'
+FROM USER_TABLES A
+WHERE 1=1
+  AND A.TABLE_NAME  LIKE 'ACT_HI%'
+;
+
+SELECT * FROM ACT_HI_ACTINST;
+SELECT * FROM ACT_HI_ATTACHMENT;
+SELECT * FROM ACT_HI_BATCH;
+SELECT * FROM ACT_HI_CASEACTINST;
+SELECT * FROM ACT_HI_CASEINST;
+SELECT * FROM ACT_HI_COMMENT;
+SELECT * FROM ACT_HI_DECINST;
+SELECT * FROM ACT_HI_DEC_IN;
+SELECT * FROM ACT_HI_DEC_OUT;
+SELECT * FROM ACT_HI_DETAIL;
+SELECT * FROM ACT_HI_EXT_TASK_LOG;
+SELECT * FROM ACT_HI_IDENTITYLINK;
+SELECT * FROM ACT_HI_INCIDENT;
+SELECT * FROM ACT_HI_JOB_LOG;
+SELECT * FROM ACT_HI_OP_LOG;
+SELECT * FROM ACT_HI_PROCINST;
+SELECT * FROM ACT_HI_TASKINST;
+SELECT * FROM ACT_HI_VARINST;

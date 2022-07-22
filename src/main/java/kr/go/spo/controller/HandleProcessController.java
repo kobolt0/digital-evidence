@@ -1,9 +1,9 @@
 package kr.go.spo.controller;
 
-import kr.go.spo.common.CommonDao;
 import kr.go.spo.service.HandleProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.*;
 import org.camunda.bpm.engine.impl.context.BpmnExecutionContext;
@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * REST 컨트롤로 테스트
@@ -119,20 +117,220 @@ public class HandleProcessController {
     return instance.getId();
   }
 
-  // 진행중인 프로세스 접근
 
-//  @GetMapping("/runningProc")
+    // 인시던트 목록
+      @GetMapping("/incidentQry")
+    public List<Map<String, String>> incidentQry(HttpServletRequest req, @RequestParam(value="val1", defaultValue="") String val1) {
+          // 인시던트 쿼리 테스트
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+
+        List<Incident> listInc = this.getRuntimeService().createIncidentQuery()
+                .list();
+        log.debug("");
+        log.debug("##@#Incident ");
+        for (Incident inc : listInc) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", inc.getId());
+            rtnMap.put("getProcessInstanceId", inc.getProcessInstanceId());
+            rtnMap.put("getCauseIncidentId", inc.getCauseIncidentId());
+            rtnMap.put("getActivityId", inc.getActivityId());
+            rtnMap.put("getIncidentType", inc.getIncidentType());
+            rtnMap.put("getAnnotation", inc.getAnnotation());
+            rtnMap.put("getConfiguration", inc.getConfiguration());
+            rtnMap.put("getExecutionId", inc.getExecutionId());
+            rtnMap.put("getFailedActivityId", inc.getFailedActivityId());
+            rtnMap.put("getIncidentMessage", inc.getIncidentMessage());
+            rtnMap.put("getHistoryConfiguration", inc.getHistoryConfiguration());
+            rtnMap.put("getJobDefinitionId", inc.getJobDefinitionId());
+            rtnMap.put("getProcessDefinitionId", inc.getProcessDefinitionId());
+            rtnMap.put("getRootCauseIncidentId", inc.getRootCauseIncidentId());
+            rtnMap.put("getIncidentTimestamp", inc.getIncidentTimestamp().toString());
+            rtnMap.put("getTenantId", inc.getTenantId());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // Execution 목록
+    @GetMapping("/executionQry")
+    public List<Map<String, String>> executionQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        // Execution 쿼리 테스트
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+
+        ExecutionQuery qry = this.getRuntimeService().createExecutionQuery();
+
+        List<Execution> list = qry.list();
+
+        log.debug("");
+        log.debug("##@#executionQry ");
+        for (Execution obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // ProcessInstance 목록
+    @GetMapping("/processInstanceQry")
+    public List<Map<String, String>> processInstanceQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        // ProcessInstance 쿼리 테스트
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+
+        ProcessInstanceQuery qry = this.getRuntimeService().createProcessInstanceQuery();
+
+        List<ProcessInstance> list = qry.list();
+
+        log.debug("");
+        log.debug("##@# processInstanceQ ");
+        for (ProcessInstance obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnMap.put("getCaseInstanceId", obj.getCaseInstanceId());
+            rtnMap.put("getRootProcessInstanceId", obj.getRootProcessInstanceId());
+            rtnMap.put("getBusinessKey", obj.getBusinessKey());
+            rtnMap.put("getProcessDefinitionId", obj.getProcessDefinitionId());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // VariableInstance 목록
+    @GetMapping("/variableInstanceQry")
+    public List<Map<String, String>> variableInstanceQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        // VariableInstance 쿼리 테스트
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+
+        VariableInstanceQuery qry = this.getRuntimeService().createVariableInstanceQuery();
+
+        List<VariableInstance> list = qry.list();
+
+        log.debug("");
+        log.debug("##@# processInstanceQ ");
+        for (VariableInstance obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getExecutionId", obj.getExecutionId());
+            rtnMap.put("getName", obj.getName());
+            rtnMap.put("getTypeName", obj.getTypeName());
+            rtnMap.put("getTypedValue", obj.getTypedValue().toString());
+            rtnMap.put("getValue", ObjectUtils.defaultIfNull(obj.getValue(), "").toString());
+            rtnMap.put("getTaskId", obj.getTaskId());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnMap.put("getCaseInstanceId", obj.getCaseInstanceId());
+            rtnMap.put("getActivityInstanceId", obj.getActivityInstanceId());
+            rtnMap.put("getBatchId", obj.getBatchId());
+            rtnMap.put("getProcessDefinitionId", obj.getProcessDefinitionId());
+            rtnMap.put("getCaseExecutionId", obj.getCaseExecutionId());
+            rtnMap.put("getErrorMessage", obj.getErrorMessage());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+
+    // eventSubscriptionQry 목록
+    @GetMapping("/eventSubscriptionQry")
+    public List<Map<String, String>> eventSubscriptionQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+        EventSubscriptionQuery qry = this.getRuntimeService().createEventSubscriptionQuery();
+
+        List<EventSubscription> list = qry.list();
+
+        for (EventSubscription obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getExecutionId", obj.getExecutionId());
+            rtnMap.put("getEventName", obj.getEventName());
+            rtnMap.put("getActivityId", obj.getActivityId());
+            rtnMap.put("getEventType", obj.getEventType());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnMap.put("getCreated", obj.getCreated().toString());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // NativeExecutionQuery 목록
+    @GetMapping("/nativeExecutionQry")
+    public List<Map<String, String>> nativeExecutionQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+        NativeExecutionQuery qry = this.getRuntimeService().createNativeExecutionQuery();
+
+        List<Execution> list = qry.list();
+
+        for (Execution obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // NativeExecutionQuery 목록
+    @GetMapping("/nativeProcessInstanceQry")
+    public List<Map<String, String>> nativeProcessInstanceQry(HttpServletRequest req, @RequestParam(value = "val1", defaultValue = "") String val1) {
+        log.debug("##@# REST. {}", req.getRequestURL());
+        List<Map<String, String>> rtnList = new ArrayList<>();
+        NativeProcessInstanceQuery qry = this.getRuntimeService().createNativeProcessInstanceQuery();
+
+        List<ProcessInstance> list = qry.list();
+
+        for (ProcessInstance obj : list) {
+            Map<String, String> rtnMap = new LinkedHashMap<>();
+            rtnMap.put("getId", obj.getId());
+            rtnMap.put("getProcessInstanceId", obj.getProcessInstanceId());
+            rtnMap.put("getTenantId", obj.getTenantId());
+            rtnMap.put("getProcessDefinitionId", obj.getProcessDefinitionId());
+            rtnMap.put("getRootProcessInstanceId", obj.getRootProcessInstanceId());
+            rtnMap.put("getBusinessKey", obj.getBusinessKey());
+            rtnMap.put("getCaseInstanceId", obj.getCaseInstanceId());
+            rtnList.add(rtnMap);
+        }
+        return rtnList;
+    }
+
+    // 진행중인 프로세스 접근
+
+  @GetMapping("/runningProc")
   public String runningProc(HttpServletRequest req, @RequestParam(value="val1", defaultValue="") String val1) {
     log.debug("##@# TEST. {}", req.getRequestURL());
     ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
 //    List<ProcessInstance> obj = getAllRunningProcessInstances(val1);
+      // 인시던트 테스트
+      List<Incident> listInc = this.getRuntimeService().createIncidentQuery()
+              .list();
+      log.debug("");
+      log.debug("##@#Incident " );
+      for(Incident inc: listInc){
+          log.debug("##@#getId [{}]", inc.getId());
+      }
+
+
+
     ProcessInstanceQuery qry = this.getRuntimeService().createProcessInstanceQuery();
+
     List<ProcessInstance> list = qry.list();
 //    ActivityInstance ai = runtimeService.getActivityInstance("Activity_virus:b764ed0e-f77d-11ec-8ad8-2acdc420f0a3");
 //    String getId = ai.getId();
 //    String getActivityId = ai.getActivityId();
     for (ProcessInstance pi: list
          ) {
+
         log.debug("##@# ProcessInstance");
         log.debug("##@# [{}]getId", pi.getId());
         log.debug("##@# [{}]getProcessInstanceId", pi.getProcessInstanceId());
@@ -181,6 +379,9 @@ public class HandleProcessController {
     FormService formService = processEngine.getFormService();
     HistoryService historyService = processEngine.getHistoryService();
     ManagementService managementService = processEngine.getManagementService();
+
+
+
 
     List<Job> obj = managementService.createJobQuery().executionId(listex.get(0).getId()).list();
       for (Job job :

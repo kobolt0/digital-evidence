@@ -1,13 +1,14 @@
 package kr.go.spo.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +92,8 @@ public class HttpUtils {
         Set<String> set = inMap.keySet();
         for (String key :set) {
             sb.append(sb.length() > 0 ? "&" : "?");
-            sb.append(key).append("=").append(URLEncoder.encode(inMap.get(key), StandardCharsets.UTF_8));
+
+            sb.append(key).append("=").append(URLEncoder.encode(ObjectUtils.defaultIfNull(inMap.get(key), ""), StandardCharsets.UTF_8));
         }
 
         return sb.toString();
