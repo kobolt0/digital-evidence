@@ -24,11 +24,11 @@ public class LogbackFilter extends Filter<ILoggingEvent> {
 //        acceptConition = acceptConition || event.getLoggerName().startsWith("kr.go.spo");
         acceptConition= true;
 
-        denyConition = denyConition || event.getMessage().contains(" ACT_");
-        denyConition = denyConition || event.getLoggerName().contains("selectHistoricVariableInstance");
-        denyConition = denyConition || event.getLoggerName().contains("ActiveMQSession");
+//        denyConition = denyConition || event.getMessage().contains(" ACT_");
+//        denyConition = denyConition || event.getLoggerName().contains("selectHistoricVariableInstance");
+//        denyConition = denyConition || event.getLoggerName().contains("ActiveMQSession");
 
-//        denyConition = false;
+        denyConition = false;
 
 
         if (denyConition) {

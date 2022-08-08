@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -26,6 +27,7 @@ public class ProcessStartWorker implements JavaDelegate {
                 ,""
                 ,""
         ) ;
+
 
         //프로세스인스턴스 디비 인서트
         this.processInstanceService.insertTbProcessInstance(processInstanceDto);

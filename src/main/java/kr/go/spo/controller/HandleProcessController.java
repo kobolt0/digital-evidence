@@ -380,7 +380,7 @@ public class HandleProcessController {
     HistoryService historyService = processEngine.getHistoryService();
     ManagementService managementService = processEngine.getManagementService();
 
-
+//      managementService.suspendJobById();
 
 
     List<Job> obj = managementService.createJobQuery().executionId(listex.get(0).getId()).list();
@@ -431,8 +431,8 @@ public class HandleProcessController {
   }
 
   // 디비상태는 재시작인데 실제로는 멈춰있는 프로세스를 재시작한다.
-  @Scheduled(fixedDelay = 5000, initialDelay = 5000)
-//    @GetMapping("/runningProc")
+//  @Scheduled(fixedDelay = 5000, initialDelay = 5000)
+    @GetMapping("/chkSuspendedProcess")
   public void chkSuspendedProcess() {
       log.debug("##@# chkSuspendedProcess start");
       try {

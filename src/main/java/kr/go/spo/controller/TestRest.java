@@ -56,6 +56,13 @@ public class TestRest {
     for (Map<String, String> tmpMap: list) {
       map.put(tmpMap.get("NAME"), tmpMap.get("VAL"));
     }
+
+    //예외발생
+    if ("Y".equals(map.get("exceptionYn"))){
+      new Exception("##@# 예외발생");
+    }
+
+
     int sleepTime = 1000 * Integer.valueOf(map.get("sleepTime"));
     Thread.sleep(sleepTime);
     log.debug("##@# sleep {} sec",sleepTime);

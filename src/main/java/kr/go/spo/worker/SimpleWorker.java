@@ -8,6 +8,7 @@ import kr.go.spo.service.TaskRunService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.runtime.Incident;
 import org.camunda.bpm.engine.variable.value.TypedValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,11 @@ public class SimpleWorker extends CommonWorker {
         String strContent = resVO.getContent();
         if (StringUtils.isNotEmpty(strContent)){
             Map<String, Object> jsonMap = gson.fromJson(strContent, Map.class);
+            //FIXME 테스트용 인시던트 발생
+            if ("Y".equals(jsonMap.get("incidentYn"))){
+                throw new RuntimeException("## 예외발생");
+            }
+
             for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
                 execution.setVariable(entry.getKey(), entry.getValue());
             }

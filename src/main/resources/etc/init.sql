@@ -1,4 +1,3 @@
--- 프로젝트 초기화 --
 SELECT * FROM USER_TABLES;
 
 -- 프로젝트 초기화 --
@@ -119,8 +118,8 @@ CREATE SEQUENCE SEQ_TASK_RUN_HST
     MINVALUE 1
     MAXVALUE 99999
     NOCYCLE
-       NOCACHE
-       NOORDER;
+    NOCACHE
+    NOORDER;
 
 ;
 -- 테스트용 더미 테이블. 테스트용 더미 rest api 리턴값
@@ -134,12 +133,14 @@ CREATE TABLE tb_dummy (
 -- 테스트용 테이블
 INSERT INTO tb_dummy (name,val) VALUES ('isProcessEnd', 'Y');
 INSERT INTO tb_dummy (name,val) VALUES ('sleepTime', '8');
+INSERT INTO tb_dummy (name,val) VALUES ('incidentYn', 'Y');
 
 -- 더미테이블 값변경
 UPDATE tb_dummy SET val= 'Y' WHERE name = 'isProcessEnd'; -- 종료
 UPDATE tb_dummy SET val= 'N' WHERE name = 'isProcessEnd'; -- 무한
+UPDATE tb_dummy SET val= 'N' WHERE name = 'incidentYn'; -- 인시던트생성
 ;
-UPDATE tb_dummy SET val= '8' WHERE name = 'sleepTime'; -- 더미 대기시간
+UPDATE tb_dummy SET val= '2' WHERE name = 'sleepTime'; -- 더미 대기시간
 --------------------------------------------------------------------------------------------------
 SELECT *
 FROM tb_task_run

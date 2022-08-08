@@ -13,12 +13,14 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.runtime.Execution;
-import org.camunda.bpm.engine.variable.value.IntegerValue;
 import org.camunda.bpm.engine.variable.value.TypedValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 공통적으로 수행되는 로직이 정의된 WORKER 추상클래스.
@@ -35,10 +37,6 @@ public abstract class CommonWorker implements JavaDelegate {
   protected final TaskRunService taskRunService;
 
 
-  @Value("${workflow.preprocess.extractMaxCnt}")
-  int extractMaxCnt ;
-  @Value("${workflow.preprocess.extractMaxCnt}")
-  String strextractMaxCnt ;
   @Value("8")
   int taskMaxCnt ;//  프로세스 수행갯수 제한
 
@@ -197,7 +195,16 @@ public abstract class CommonWorker implements JavaDelegate {
 
 
     // 3. 개별로직 호출
-    String rslt = this.executeMain(execution);
+    String rslt;
+    try {
+      rslt = this.executeMain(execution);
+    } catch (Exception e) {
+      log.error("## 오류", e);
+      rslt = "오류";
+//      execution.getProcessEngine().getRuntimeService().suspendProcessInstanceById(execution.getProcessInstanceId());
+      throw e;
+    }
+
     log.debug("##@# executeMain[{}] return[{}]",execution.getActivityInstanceId(), rslt);
 
     // 4. 타스크 종료 상태 db Update
