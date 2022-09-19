@@ -38,8 +38,8 @@ public class TestRest {
 
   @GetMapping("/testList")
   public String testJsonList() {
-    Map<String, String> map = sqlSessionTemplate.selectOne("test.selectTest");
-    log.debug("##@# sql resutl:{}" , map);
+//    Map<String, String> map = sqlSessionTemplate.selectOne("test.selectTest");
+//    log.debug("##@# sql resutl:{}" , map);
 
     List<Map<String, String>> list = sqlSessionTemplate.selectList("test.selectTest");
     log.debug("##@# sql list resutl:{}" , list);

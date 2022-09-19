@@ -71,12 +71,12 @@ public class HandleProcessService {
   }
 
   // 프로세스 시작
-  public ProcessInstance startProcess(String caseId, String prioty) {
+  public ProcessInstance startProcess(String processId, String caseId, String prioty) {
     Map<String, Object> variables=new HashMap<>();
     variables.put("caseId",caseId);
     variables.put("prioty",prioty);
 
-    ProcessInstanceWithVariables instance = this.getRuntimeService().createProcessInstanceByKey("preprocess")
+    ProcessInstanceWithVariables instance = this.getRuntimeService().createProcessInstanceByKey(processId)
             .setVariables(variables)
             .businessKey(caseId)
             .executeWithVariablesInReturn()

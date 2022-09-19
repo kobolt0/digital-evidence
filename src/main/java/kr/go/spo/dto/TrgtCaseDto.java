@@ -10,6 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrgtCaseDto implements Serializable {
+  public String processId;
   public String caseId;
   public String priority;
 }

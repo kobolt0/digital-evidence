@@ -20,7 +20,7 @@ public class MsgListenController {
 
         log.debug("##@# JMS receiveMessage {}.{}", this.getClass().getName(), trgtCaseDto.toString());
 
-        ProcessInstance pi = this.handleProcessService.startProcess(trgtCaseDto.getCaseId(), trgtCaseDto.getPriority());
+        ProcessInstance pi = this.handleProcessService.startProcess(trgtCaseDto.getProcessId(), trgtCaseDto.getCaseId(), trgtCaseDto.getPriority());
 
         log.debug("##@# start process {}", pi.toString());
     }

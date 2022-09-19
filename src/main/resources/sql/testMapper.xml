@@ -14,7 +14,7 @@
         , TASK_START_TIME
         , TASK_END_TIME
         FROM   TB_TASK_RUN
-        WHERE  ROWNUM &lt; 2
+        WHERE  ROWNUM &lt; 10
 
     </select>
 

@@ -22,15 +22,16 @@ public class MqController {
 
   @GetMapping("/produceMsg")
   public String produceMsg(HttpServletRequest req
+          , @RequestParam(value="processId", defaultValue="") String processId
           , @RequestParam(value="caseId", defaultValue="") String caseId
           , @RequestParam(value="priority", defaultValue="") String priority
   ) {
 
-    TrgtCaseDto trgtCaseDto = new TrgtCaseDto(caseId, priority);
+    TrgtCaseDto trgtCaseDto = new TrgtCaseDto(processId, caseId, priority);
     jmsTemplate.setPubSubDomain(false);
     jmsTemplate.convertAndSend("trgtCase", trgtCaseDto);
-    log.debug("##@# JMS produceMsg [{}]", trgtCaseDto);
 
+    log.debug("##@# JMS produceMsg [{}]", trgtCaseDto);
     return null;
   }
 
