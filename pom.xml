@@ -4,8 +4,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>kr.go.spo</groupId>
-  <artifactId>digital-evidence</artifactId>
+  <groupId>gov.spo.ndfaas.bigdata</groupId>
+  <artifactId>workflow</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 
   <properties>
@@ -154,7 +154,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>2.6.4</version>
         <configuration>
-          <mainClass>kr.go.spo.Application</mainClass>
+          <mainClass>gov.spo.ndfaas.bigdata.workflow.Application</mainClass>
         </configuration>
         <executions>
           <execution>

@@ -7,7 +7,7 @@
             -->
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%thread][%-3level %logger{5}]%msg %n</pattern>
         </encoder>
-        <filter class="kr.go.spo.config.LogbackFilter"/>
+        <filter class="gov.spo.ndfaas.bigdata.workflow.config.LogbackFilter"/>
     </appender>
     <logger name="org.springframework" level="OFF" />
     <logger name="org.mybatis.spring" level="OFF" />

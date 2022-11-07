@@ -5,7 +5,7 @@
 
 <mapper namespace="preprocess">
 
-    <select id="selectTbTaskRunByPk" parameterType="kr.go.spo.dto.TaskRunDto" resultType="kr.go.spo.dto.TaskRunDto" >
+    <select id="selectTbTaskRunByPk" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto" resultType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto" >
         SELECT
                PROCESS_INSTANCE_ID
              , TASK_ACTIVITY_ID
@@ -20,7 +20,7 @@
           AND PROCESS_INSTANCE_ID = #{processInstanceId}
           AND TASK_ACTIVITY_ID = #{taskActivityId}
     </select>
-    <insert id="insertTbTaskRunHstByPk" parameterType="kr.go.spo.dto.TaskRunHstDto">
+    <insert id="insertTbTaskRunHstByPk" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunHstDto">
         --insertTbTaskRunHstByPk
         INSERT INTO TB_TASK_RUN_HST
         SELECT
@@ -33,7 +33,7 @@
 
     </insert>
 
-    <insert id="insertTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
+    <insert id="insertTbTaskRun" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto">
         INSERT INTO TB_TASK_RUN
         (
           PROCESS_INSTANCE_ID
@@ -72,7 +72,7 @@
             )
     </insert>
 
-    <update id="mergeTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
+    <update id="mergeTbTaskRun" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto">
         MERGE
             INTO tb_task_run A
                 USING DUAL
@@ -120,7 +120,7 @@
     </update>
 
 
-    <update id="updateTbTaskRun" parameterType="kr.go.spo.dto.TaskRunDto">
+    <update id="updateTbTaskRun" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto">
         UPDATE tb_task_run
         SET
             TASK_STATUS       = #{taskStatus}
@@ -140,7 +140,7 @@
     </update>
 
 
-    <insert id="insertTbProcessInstance" parameterType="kr.go.spo.dto.ProcessInstanceDto">
+    <insert id="insertTbProcessInstance" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.ProcessInstanceDto">
         INSERT INTO TB_PROCESS_INSTANCE
         (
           PROCESS_INSTANCE_ID
@@ -164,7 +164,7 @@
     </insert>
 
 
-    <update id="updateTbProcessInstance" parameterType="kr.go.spo.dto.ProcessInstanceDto">
+    <update id="updateTbProcessInstance" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.ProcessInstanceDto">
         UPDATE TB_PROCESS_INSTANCE
         SET
         STATUS       = #{status}
@@ -182,7 +182,7 @@
         AND PROCESS_INSTANCE_ID = #{processInstanceId}
     </update>
 
-    <select id="selectListChkSuspendedProcess" parameterType="kr.go.spo.dto.TaskRunDto" resultType="kr.go.spo.dto.TaskRunDto" >
+    <select id="selectListChkSuspendedProcess" parameterType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto" resultType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto" >
         SELECT T.TASK_ACTIVITY_ID
              , T.PROCESS_INSTANCE_ID
         FROM (

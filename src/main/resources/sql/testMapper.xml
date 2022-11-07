@@ -18,7 +18,7 @@
 
     </select>
 
-    <select id="selectTest2" resultType="kr.go.spo.dto.TaskRunDto">
+    <select id="selectTest2" resultType="gov.spo.ndfaas.bigdata.workflow.dto.TaskRunDto">
         SELECT
         TASK_INSTANCE_ID
         , PROCESS_INSTANCE_ID

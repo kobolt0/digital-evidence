@@ -3,8 +3,10 @@ spring:
 #    driver-class-name: oracle.jdbc.driver.OracleDriver
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     url: jdbc:log4jdbc:oracle:thin:@dongck.synology.me:51521:XE
-    username: camunda
-    password: camunda
+#    username: camunda
+#    password: camunda
+    username: workflow
+    password: workflow
 
   activemq:
     user: admin
